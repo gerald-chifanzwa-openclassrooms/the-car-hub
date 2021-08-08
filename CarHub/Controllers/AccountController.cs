@@ -56,5 +56,11 @@ namespace CarHub.Controllers
             await _signInManager.SignInAsync(user, true).ConfigureAwait(false);
             return Redirect(model.ReturnUrl);
         }
+
+        public async Task<ActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync().ConfigureAwait(false);
+            return Redirect("/");
+        }
     }
 }
