@@ -1,4 +1,6 @@
+using System.Threading.Tasks;
 using CarHub.Data;
+using CarHub.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -20,8 +22,8 @@ namespace CarHub
             {
                 var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
                 var configuration = sp.GetRequiredService<IConfiguration>();
-
-                options.UseSqlServer(configuration.GetConnectionString("DbConnection"));
+                var connectionString = configuration.GetConnectionString("DbConnection");
+                options.UseSqlServer(connectionString);
                 options.UseLoggerFactory(loggerFactory);
             });
             services.AddIdentity<IdentityUser, IdentityRole>()

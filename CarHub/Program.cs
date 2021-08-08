@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+using CarHub.Extensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -8,9 +10,11 @@ namespace CarHub
     public class Program
     {
         private const string LogTemplate = "[{Timestamp:HH:mm:ss, MMM dd yyyy} {Level:u3}]-{SourceContext}{NewLine}{Message:lj} {Exception}{NewLine}";
-        public static void Main(string [] args)
+        public static async Task Main(string [] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var host = CreateHostBuilder(args).Build();
+            await host.CreateDefaultUser();
+            await host.RunAsync();
         }
 
         public static IHostBuilder CreateHostBuilder(string [] args) =>
