@@ -17,9 +17,9 @@ namespace CarHub.Data.Configuration
             builder.Property(p => p.FileName).IsUnicode(false).IsRequired().HasMaxLength(100);
             builder.Property(p => p.VehicleId).IsRequired();
             builder.Property(p => p.MimeType).IsUnicode(false).IsRequired().HasMaxLength(20);
-            builder.Property(p => p.ImageData).IsRequired().HasColumnType("BINARY");
+            builder.Property(p => p.ImageData).IsRequired().HasColumnType("VARBINARY(MAX)");
 
-            builder.HasOne(p => p.Vehicle).WithMany(p => p.Images).HasForeignKey(p => p.VehicleId);
+            builder.HasOne(p => p.Vehicle).WithMany(p => p.Images).HasForeignKey(p => p.VehicleId).OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

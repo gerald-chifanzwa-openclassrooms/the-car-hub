@@ -8,7 +8,7 @@ namespace CarHub.Data
         public Vehicle Vehicle { get; set; }
         public int VehicleId { get; set; }
         public DateTime Date { get; set; }
-        public int Description { get; set; }
+        public string Description { get; set; }
         public decimal Cost { get; set; }
     }
 }

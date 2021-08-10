@@ -173,8 +173,8 @@ namespace CarHub.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Year = table.Column<int>(type: "int", nullable: false),
                     MakeId = table.Column<int>(type: "int", nullable: false),
-                    Model = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Trim = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Model = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Trim = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     PurchaseDate = table.Column<DateTime>(type: "DATE", nullable: false),
                     PurchasePrice = table.Column<decimal>(type: "decimal(10,4)", precision: 10, scale: 4, nullable: false)
                 },
@@ -186,7 +186,7 @@ namespace CarHub.Migrations
                         column: x => x.MakeId,
                         principalTable: "VehicleMakes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -196,7 +196,7 @@ namespace CarHub.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     VehicleId = table.Column<int>(type: "int", nullable: false),
-                    ImageData = table.Column<byte[]>(type: "BINARY", nullable: false),
+                    ImageData = table.Column<byte[]>(type: "VARBINARY(MAX)", nullable: false),
                     MimeType = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: false),
                     FileName = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false)
                 },
@@ -208,7 +208,7 @@ namespace CarHub.Migrations
                         column: x => x.VehicleId,
                         principalTable: "Vehicles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -221,7 +221,7 @@ namespace CarHub.Migrations
                     DateAdded = table.Column<DateTime>(type: "DATE", nullable: false),
                     SellingPrice = table.Column<decimal>(type: "decimal(10,4)", precision: 10, scale: 4, nullable: false),
                     SellDate = table.Column<DateTime>(type: "DATE", nullable: true),
-                    VehicleId1 = table.Column<int>(type: "int", nullable: true)
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -232,12 +232,6 @@ namespace CarHub.Migrations
                         principalTable: "Vehicles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_LotStatus_Vehicles_VehicleId1",
-                        column: x => x.VehicleId1,
-                        principalTable: "Vehicles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -248,7 +242,7 @@ namespace CarHub.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     VehicleId = table.Column<int>(type: "int", nullable: false),
                     Date = table.Column<DateTime>(type: "DATE", nullable: false),
-                    Description = table.Column<int>(type: "int", maxLength: 200, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Cost = table.Column<decimal>(type: "decimal(10,4)", precision: 10, scale: 4, nullable: false)
                 },
                 constraints: table =>
@@ -259,7 +253,7 @@ namespace CarHub.Migrations
                         column: x => x.VehicleId,
                         principalTable: "Vehicles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -311,13 +305,6 @@ namespace CarHub.Migrations
                 table: "LotStatus",
                 column: "VehicleId",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_LotStatus_VehicleId1",
-                table: "LotStatus",
-                column: "VehicleId1",
-                unique: true,
-                filter: "[VehicleId1] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Repairs_VehicleId",

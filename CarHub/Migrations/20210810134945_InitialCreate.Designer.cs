@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CarHub.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210807082827_InitialCreate")]
+    [Migration("20210810134945_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,20 +40,16 @@ namespace CarHub.Migrations
                         .HasPrecision(10, 4)
                         .HasColumnType("decimal(10,4)");
 
-                    b.Property<int>("VehicleId")
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int?>("VehicleId1")
+                    b.Property<int>("VehicleId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("VehicleId")
                         .IsUnique();
-
-                    b.HasIndex("VehicleId1")
-                        .IsUnique()
-                        .HasFilter("[VehicleId1] IS NOT NULL");
 
                     b.ToTable("LotStatus");
                 });
@@ -74,10 +70,10 @@ namespace CarHub.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("DATE");
 
-                    b.Property<int>("Description")
+                    b.Property<string>("Description")
+                        .IsRequired()
                         .HasMaxLength(200)
-                        .IsUnicode(true)
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("VehicleId")
                         .HasColumnType("int");
@@ -103,7 +99,8 @@ namespace CarHub.Migrations
 
                     b.Property<string>("Model")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("PurchaseDate")
                         .HasColumnType("DATE");
@@ -113,7 +110,8 @@ namespace CarHub.Migrations
                         .HasColumnType("decimal(10,4)");
 
                     b.Property<string>("Trim")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("Year")
                         .HasColumnType("int");
@@ -142,7 +140,7 @@ namespace CarHub.Migrations
 
                     b.Property<byte[]>("ImageData")
                         .IsRequired()
-                        .HasColumnType("BINARY");
+                        .HasColumnType("VARBINARY(MAX)");
 
                     b.Property<string>("MimeType")
                         .IsRequired()
@@ -378,17 +376,11 @@ namespace CarHub.Migrations
 
             modelBuilder.Entity("CarHub.Data.LotStatus", b =>
                 {
-                    b.HasOne("CarHub.Data.Vehicle", "Vehicle")
-                        .WithOne()
+                    b.HasOne("CarHub.Data.Vehicle", null)
+                        .WithOne("Status")
                         .HasForeignKey("CarHub.Data.LotStatus", "VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("CarHub.Data.Vehicle", null)
-                        .WithOne("Status")
-                        .HasForeignKey("CarHub.Data.LotStatus", "VehicleId1");
-
-                    b.Navigation("Vehicle");
                 });
 
             modelBuilder.Entity("CarHub.Data.RepairDetail", b =>
@@ -396,7 +388,7 @@ namespace CarHub.Migrations
                     b.HasOne("CarHub.Data.Vehicle", "Vehicle")
                         .WithMany()
                         .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Vehicle");
@@ -407,7 +399,7 @@ namespace CarHub.Migrations
                     b.HasOne("CarHub.Data.VehicleMake", "Make")
                         .WithMany()
                         .HasForeignKey("MakeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Make");
@@ -418,7 +410,7 @@ namespace CarHub.Migrations
                     b.HasOne("CarHub.Data.Vehicle", "Vehicle")
                         .WithMany("Images")
                         .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Vehicle");

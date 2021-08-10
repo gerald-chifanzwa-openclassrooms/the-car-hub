@@ -12,9 +12,9 @@ namespace CarHub.Data.Configuration
             builder.Property(p => p.Id).UseIdentityColumn();
             builder.Property(p => p.Cost).IsRequired().HasPrecision(10, 4);
             builder.Property(p => p.Date).IsRequired().HasColumnType("DATE");
-            builder.Property(p => p.Description).IsRequired().IsUnicode().HasMaxLength(200);
+            builder.Property(p => p.Description).IsRequired().HasMaxLength(200);
             builder.Property(p => p.VehicleId).IsRequired();
-            builder.HasOne(p => p.Vehicle).WithMany().HasForeignKey(p => p.VehicleId);
+            builder.HasOne(p => p.Vehicle).WithMany().HasForeignKey(p => p.VehicleId).OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
