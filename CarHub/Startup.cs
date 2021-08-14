@@ -1,6 +1,5 @@
-using System.Threading.Tasks;
 using CarHub.Data;
-using CarHub.Extensions;
+using CarHub.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -30,6 +29,9 @@ namespace CarHub
                     .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddDefaultTokenProviders()
                     .AddRoles<IdentityRole>();
+
+            services.AddScoped<IVehicleMakeService, VehicleMakeService>();
+            services.AddScoped<IInventoryService, InventoryService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

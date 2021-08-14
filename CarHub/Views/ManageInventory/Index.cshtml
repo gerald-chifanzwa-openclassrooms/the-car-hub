@@ -1,0 +1,36 @@
+﻿@using System.Linq
+@model IEnumerable<CarHub.Models.VehicleViewModel>
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<h1>View</h1>
+
+<p>
+    <a asp-action="AddNewCar">Create New</a>
+</p>
+@if(@Model.Any()){
+    <div class="list-group">
+        @foreach(var car in Model)
+        {
+            <a class="list-group-item" asp-action="Details" asp-route-id="@car.Id">
+                @Html.DisplayFor(c => car.Year)
+                @Html.DisplayFor(c => car.Make)
+                @Html.DisplayFor(c => car.Model)
+                @Html.DisplayFor(c => car.Trim)
+            </a>
+        }
+    </div>
+}
+else{
+    <div class="p-5 mb-4 bg-light rounded-3">
+      <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">No vehicles available yet</h1>
+        <p class="col-md-8 fs-4">
+            Please click on the button below to start adding vehicles to your inventory.
+        </p>
+        <a class="btn btn-primary btn-lg" asp-action="AddNewCar">Add Now</a>
+      </div>
+    </div>
+}

@@ -1,0 +1,19 @@
+﻿@model IEnumerable<CarHub.Models.VehicleMakeViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Vehicle Makes</h1>
+
+<p>
+    <a asp-action="Add">Add New</a>
+</p>
+<div class="list-group">
+    @foreach(var item in Model)
+    {
+        <div class="list-group-item">
+            @Html.DisplayFor(_ => item.Name)
+        </div>
+    }
+</div>
