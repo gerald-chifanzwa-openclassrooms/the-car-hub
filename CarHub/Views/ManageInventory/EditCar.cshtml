@@ -1,63 +1,25 @@
 ﻿@using System.Linq
 @model CarHub.Models.VehicleInputViewModel
-@inject CarHub.Services.IVehicleMakeService vehicleMakeService
+@inject CarHub.Services.IInventoryService vehicleService
 @{
     ViewData["Title"] = "EditCar";
-    var makes = await vehicleMakeService.GetVehicleMakes(default);
-    var currentMake = makes.FirstOrDefault(m => m.Id == Model.MakeId);
+    var id = int.Parse((string)this.ViewContext.RouteData.Values["id"]);
+    var vehicleInfo = await vehicleService.GetVehicleAsync(id, default);
 }
 
 <h1>Edit Car</h1>
 
 <h4>
-    @Html.DisplayFor(model => model.Year)
-    @Html.DisplayFor(model => currentMake.Name)
-    @Html.DisplayFor(model => model.Model)
-    @Html.DisplayFor(model => model.Trim)
+    @Html.DisplayFor(_ => vehicleInfo.Year)
+    @Html.DisplayFor(_ => vehicleInfo.Make)
+    @Html.DisplayFor(_ => vehicleInfo.Model)
+    @Html.DisplayFor(_ => vehicleInfo.Trim)
 </h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="EditCar">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="MakeId" class="control-label"></label>
-                @Html.DropDownListFor(m => m.MakeId,
-                                            makes.Select(s => 
-                                                    new SelectListItem() { Text = s.Name, Value = s.Id.ToString()}
-                                                    ),
-                                                    new { @class="form-control"})
-                <span asp-validation-for="MakeId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Model" class="control-label"></label>
-                <input asp-for="Model" class="form-control" />
-                <span asp-validation-for="Model" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Trim" class="control-label"></label>
-                <input asp-for="Trim" class="form-control" />
-                <span asp-validation-for="Trim" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Year" class="control-label"></label>
-                <input asp-for="Year" class="form-control" />
-                <span asp-validation-for="Year" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PurchasePrice" class="control-label"></label>
-                <input asp-for="PurchasePrice" class="form-control" />
-                <span asp-validation-for="PurchasePrice" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PurchaseDate" class="control-label"></label>
-                <input asp-for="PurchaseDate" class="form-control" type="date"/>
-                <span asp-validation-for="PurchaseDate" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
+            <partial name="_VehicleFormPartial" for="@Model"></partial>
         </form>
     </div>
 </div>

@@ -1,0 +1,50 @@
+﻿@using System.Linq
+@model CarHub.Models.VehicleInputViewModel
+@inject CarHub.Services.IVehicleMakeService vehicleMakeService
+@{
+    var makes = await vehicleMakeService.GetVehicleMakes(default);
+    var yearRange = Enumerable.Range(1990, DateTime.Today.Year - 1990 + 1).OrderByDescending(v => v);
+}
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="form-group">
+    <label asp-for="MakeId" class="control-label"></label>
+    @Html.DropDownListFor(m => m.MakeId,
+    makes.Select(s =>
+    new SelectListItem() { Text = s.Name, Value = s.Id.ToString()}
+    ),
+    new { @class="form-control"})
+    <span asp-validation-for="MakeId" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="Model" class="control-label"></label>
+    <input asp-for="Model" class="form-control" />
+    <span asp-validation-for="Model" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="Trim" class="control-label"></label>
+    <input asp-for="Trim" class="form-control" />
+    <span asp-validation-for="Trim" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="Year" class="control-label"></label>
+    @Html.DropDownListFor(m => m.Year,
+    yearRange.Select(val =>
+    new SelectListItem() { Text = val.ToString(), Value = val.ToString()}
+    ),
+    new { @class="form-control"})
+    <span asp-validation-for="Year" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="PurchasePrice" class="control-label"></label>
+    <input asp-for="PurchasePrice" class="form-control" />
+    <span asp-validation-for="PurchasePrice" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="PurchaseDate" class="control-label"></label>
+    <input asp-for="PurchaseDate" class="form-control date-picker" data-value="@Model.PurchaseDate.ToString("dd/MM/yyyy")"/>
+    <span asp-validation-for="PurchaseDate" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <input type="submit" value="Submit" class="btn btn-primary" />
+</div>

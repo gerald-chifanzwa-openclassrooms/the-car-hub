@@ -65,7 +65,7 @@ namespace CarHub.Controllers
         [HttpPost("{id:int}/Edit"), ValidateAntiForgeryToken]
         public async Task<IActionResult> EditCar(int id, VehicleInputViewModel viewModel, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid) return View();
+            if (!ModelState.IsValid) return View(viewModel);
 
             var vehicle = await _inventoryService.EditVehicle(id, viewModel, cancellationToken);
             return RedirectToAction("Index");
