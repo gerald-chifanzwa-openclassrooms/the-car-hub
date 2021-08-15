@@ -1,46 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CarHub.Data;
 using CarHub.Exceptions;
 using CarHub.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace CarHub.Services
 {
     public class InventoryService : IInventoryService
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<InventoryService> _logger;
 
-        public InventoryService(ApplicationDbContext dbContext, ILogger<InventoryService> logger)
+        public InventoryService(ApplicationDbContext dbContext, IHttpContextAccessor httpContextAccessor, ILogger<InventoryService> logger)
         {
             _dbContext = dbContext;
+            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
         }
 
         public async Task<IEnumerable<VehicleViewModel>> GetAllVehiclesAsync(CancellationToken cancellationToken)
         {
-            var vehicles = await _dbContext.Vehicles
+            var user = _httpContextAccessor.HttpContext.User;
+            var query = _dbContext.Vehicles
                                                    .Include(v => v.Status)
                                                    .Include(v => v.Make)
-                                                   .Select(v => new VehicleViewModel
-                                                   {
-                                                       Id = v.Id,
-                                                       Make = v.Make.Name,
-                                                       Model = v.Model,
-                                                       Trim = v.Trim,
-                                                       Year = v.Year,
-                                                       PurchaseDate = v.PurchaseDate,
-                                                       PurchasePrice = v.PurchasePrice,
-                                                       MakeId = v.Make.Id,
-                                                   })
-                                                   .ToListAsync(cancellationToken);
+                                                   .Where(v => v.Status.Status != LotDisplayStatus.Sold);
+            if (!user.Identity.IsAuthenticated)
+            {
+                query = query.Where(v => v.Status.Status != LotDisplayStatus.Hidden);
+            }
+            var vehicles = await query.Select(v => new VehicleViewModel
+            {
+                Id = v.Id,
+                Make = v.Make.Name,
+                Model = v.Model,
+                Trim = v.Trim,
+                Year = v.Year,
+                PurchaseDate = v.PurchaseDate,
+                PurchasePrice = v.PurchasePrice,
+                MakeId = v.Make.Id,
+            }).ToListAsync(cancellationToken);
+
             return vehicles;
         }
 
@@ -110,6 +117,7 @@ namespace CarHub.Services
                 MakeId = vehicleEntity.Make.Id,
             };
         }
+       
         public async Task<VehicleViewModel> EditVehicle(int vehicleId, VehicleInputViewModel vehicle, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Finding vehicle with Id {VehicleId}", vehicleId);
@@ -153,6 +161,7 @@ namespace CarHub.Services
                 MakeId = vehicleEntity.Make.Id,
             };
         }
+        
         public async Task<VehicleViewModel> RemoveVehicle(int vehicleId, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Finding vehicle with Id {VehicleId}", vehicleId);

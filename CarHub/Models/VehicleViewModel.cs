@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using CarHub.Data;
 
@@ -11,7 +10,7 @@ namespace CarHub.Models
         public DateTime PurchaseDate { get; set; }
         [DisplayFormat(DataFormatString = "{0:$#,##0.00}")]
         public decimal PurchasePrice { get; set; }
-        [DisplayFormat(DataFormatString = "{0:$#,##0.00}")]
+        [DisplayFormat(DataFormatString = "{0:$#,##.00}")]
         public decimal SellingPrice { get; set; }
         public int Id { get; set; }
         public int MakeId { get; set; }
