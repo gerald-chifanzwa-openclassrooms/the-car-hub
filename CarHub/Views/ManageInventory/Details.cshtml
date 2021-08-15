@@ -4,7 +4,7 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>Vehicle Details</h1>
 
 <div>
     <h4>
@@ -64,6 +64,15 @@
             @Html.DisplayFor(model => model.Status)
         </dd>
     </dl>
+
+    <div class="row">
+        @foreach (var image in Model.Images)
+        {
+            <div class="col">
+                <img src="@image" alt="Vehicle Image" class="img-fluid rounded"/>
+            </div>
+        }
+    </div>
 </div>
 <div>
     @Html.ActionLink("Edit", "EditCar", new { id = Model.Id }) |

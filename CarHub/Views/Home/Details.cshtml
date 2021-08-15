@@ -64,6 +64,15 @@
             @Html.DisplayFor(model => model.Status)
         </dd>
     </dl>
+
+    <div class="row">
+        @foreach (var image in Model.Images)
+        {
+            <div class="col">
+                <img src="@image" alt="Vehicle Image" class="img-thumbnail rounded m-2" />
+            </div>
+        }
+    </div>
 </div>
 <div>
     <a asp-action="Index">Back to Home</a>

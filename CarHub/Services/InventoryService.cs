@@ -73,7 +73,7 @@ namespace CarHub.Services
                     PurchaseDate = vehicleEntity.PurchaseDate,
                     PurchasePrice = vehicleEntity.PurchasePrice,
                     MakeId = vehicleEntity.Make.Id,
-                    Images = vehicleEntity.Images.Select(img => img.FileName + img.MimeType).ToList(),
+                    Images = vehicleEntity.Images.Select(img => $"/images/{vehicleEntity.Id}/{img.FileName}").ToList(),
                     Status = vehicleEntity.Status.Status,
                     SellingPrice = vehicleEntity.Status.SellingPrice
                 };
