@@ -22,6 +22,19 @@ namespace CarHub.Services
             _logger = logger;
         }
 
+        public async Task<VehicleMakeViewModel> FindMake(int makeId, CancellationToken cancellationToken)
+        {
+            return await _dbContext.VehicleMakes
+                .Where(m => m.Id == makeId)
+                .Select(m => new VehicleMakeViewModel
+                {
+                    Id = m.Id,
+                    Name = m.Name
+                })
+                .FirstOrDefaultAsync(cancellationToken);
+        }
+
+
         public async Task<VehicleMakeViewModel> AddMake(VehicleMakeViewModel model, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Adding vehicle make {@Model}", model);

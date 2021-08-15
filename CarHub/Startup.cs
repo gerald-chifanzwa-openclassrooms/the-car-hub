@@ -1,5 +1,9 @@
 using CarHub.Data;
+using CarHub.Models;
 using CarHub.Services;
+using CarHub.Validators;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -29,6 +33,9 @@ namespace CarHub
                     .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddDefaultTokenProviders()
                     .AddRoles<IdentityRole>();
+
+            services.AddFluentValidation(options => options.DisableDataAnnotationsValidation = false)
+                    .AddTransient<IValidator<VehicleInputViewModel>, VehicleInputViewModelValidator>();
 
             services.AddScoped<IVehicleMakeService, VehicleMakeService>();
             services.AddScoped<IInventoryService, InventoryService>();
