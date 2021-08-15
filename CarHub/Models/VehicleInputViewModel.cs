@@ -7,15 +7,15 @@ namespace CarHub.Models
 {
     public class VehicleInputViewModel
     {
-        [BindRequired, DisplayName("Vehicle Make")]
+        [BindRequired, Display(Name = "Vehicle Make")]
         public int MakeId { get; set; }
         [Required, MaxLength(50)]
         public string Model { get; set; }
         [Required, MaxLength(50)]
         public string Trim { get; set; }
-        [Required, BindRequired, DisplayName("Purchase Price")]
+        [Required, BindRequired, Display(Name = "Purchase Price")]
         public decimal PurchasePrice { get; set; }
-        [BindRequired, DisplayName("Purchase Date")]
+        [BindRequired, Display(Name = "Purchase Date")]
         public DateTime PurchaseDate { get; set; }
         [BindRequired]
         public int Year { get; set; }

@@ -1,9 +1,13 @@
-﻿using System.Threading;
+﻿using System.IO.Compression;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using CarHub.Models;
 using CarHub.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using CarHub.Exceptions;
 
 namespace CarHub.Controllers
 {
@@ -13,10 +17,7 @@ namespace CarHub.Controllers
     {
         private readonly IInventoryService _inventoryService;
 
-        public ManageInventoryController(IInventoryService inventoryService)
-        {
-            _inventoryService = inventoryService;
-        }
+        public ManageInventoryController(IInventoryService inventoryService) => _inventoryService = inventoryService;
 
         public async Task<IActionResult> Index(CancellationToken cancellation)
         {
@@ -67,7 +68,7 @@ namespace CarHub.Controllers
         {
             if (!ModelState.IsValid) return View(viewModel);
 
-            var vehicle = await _inventoryService.EditVehicle(id, viewModel, cancellationToken);
+            var _ = await _inventoryService.EditVehicle(id, viewModel, cancellationToken);
             return RedirectToAction("Index");
         }
 
@@ -76,8 +77,31 @@ namespace CarHub.Controllers
         {
             if (!ModelState.IsValid) return View();
 
-            var vehicle = await _inventoryService.RemoveVehicle(viewModel.Id, cancellationToken);
+            var _ = await _inventoryService.RemoveVehicle(viewModel.Id, cancellationToken);
             return RedirectToAction("Index");
+        }
+
+        [HttpGet("{id:int}/Images")]
+        public async Task<IActionResult> UploadImage(int id, CancellationToken cancellationToken)
+        {
+            var vehicle = await _inventoryService.GetVehicleAsync(id, cancellationToken);
+            return vehicle == null ? NotFound() : (IActionResult)View();
+        }
+
+        [HttpPost("{id:int}/Images"), ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadImage(int id, VehicleImageUploadViewModel model, CancellationToken cancellationToken)
+        {
+            if (!ModelState.IsValid) return View(model);
+            try
+            {
+                await _inventoryService.AddVehicleImage(id, model.File, cancellationToken);
+                return RedirectToAction("Details", new { id });
+            }
+            catch (FileTooLargeException)
+            {
+                ModelState.AddModelError("", "File is too large");
+                return View();
+            }
         }
     }
 }

@@ -35,7 +35,8 @@ namespace CarHub
                     .AddRoles<IdentityRole>();
 
             services.AddFluentValidation(options => options.DisableDataAnnotationsValidation = false)
-                    .AddTransient<IValidator<VehicleInputViewModel>, VehicleInputViewModelValidator>();
+                    .AddTransient<IValidator<VehicleInputViewModel>, VehicleInputViewModelValidator>()
+                    .AddTransient<IValidator<VehicleImageUploadViewModel>, VehicleImageUploadViewModelValidator>();
 
             services.AddScoped<IVehicleMakeService, VehicleMakeService>();
             services.AddScoped<IInventoryService, InventoryService>();
@@ -54,6 +55,7 @@ namespace CarHub
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseAuthentication();

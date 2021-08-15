@@ -1,0 +1,38 @@
+﻿@using System.Linq
+@model CarHub.Models.VehicleImageUploadViewModel
+@inject CarHub.Services.IInventoryService vehicleService
+@{
+    ViewData["Title"] = "EditCar";
+    var id = int.Parse((string)this.ViewContext.RouteData.Values["id"]);
+    var vehicleInfo = await vehicleService.GetVehicleAsync(id, default);
+}
+
+<h1>Edit Car</h1>
+
+<h4>
+    @Html.DisplayFor(_ => vehicleInfo.Year)
+    @Html.DisplayFor(_ => vehicleInfo.Make)
+    @Html.DisplayFor(_ => vehicleInfo.Model)
+    @Html.DisplayFor(_ => vehicleInfo.Trim)
+</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form enctype="multipart/form-data" method="post">
+            <div class="form-group">
+                <label asp-for="@Model.File" class="control-label"></label>
+                <input asp-for="@Model.File" type="file" class="form-control" />
+                <span asp-validation-for="@Model.File" class="text-danger"></span>
+            </div>
+            <input class="btn btn-primary" type="submit" value="Upload" />
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

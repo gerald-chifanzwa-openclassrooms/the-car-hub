@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,6 +37,7 @@ namespace CarHub.Services
             {
                 query = query.Where(v => v.Status.Status != LotDisplayStatus.Hidden);
             }
+
             var vehicles = await query.Select(v => new VehicleViewModel
             {
                 Id = v.Id,
@@ -85,6 +87,7 @@ namespace CarHub.Services
             {
                 throw new Exception("Invalid vehicle make selected");
             }
+
             var vehicleEntity = new Vehicle
             {
                 Make = make,
@@ -117,7 +120,7 @@ namespace CarHub.Services
                 MakeId = vehicleEntity.Make.Id,
             };
         }
-       
+
         public async Task<VehicleViewModel> EditVehicle(int vehicleId, VehicleInputViewModel vehicle, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Finding vehicle with Id {VehicleId}", vehicleId);
@@ -161,7 +164,7 @@ namespace CarHub.Services
                 MakeId = vehicleEntity.Make.Id,
             };
         }
-        
+
         public async Task<VehicleViewModel> RemoveVehicle(int vehicleId, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Finding vehicle with Id {VehicleId}", vehicleId);
@@ -195,6 +198,32 @@ namespace CarHub.Services
                 PurchasePrice = vehicleEntity.PurchasePrice,
                 MakeId = vehicleEntity.Make.Id,
             };
+        }
+
+        public async Task AddVehicleImage(int vehicleId, IFormFile imageFile, CancellationToken cancellationToken)
+        {
+            using var memoryStream = new MemoryStream();
+            await imageFile.CopyToAsync(memoryStream, cancellationToken);
+            var extension = Path.GetExtension(imageFile.FileName);
+            var mimeType = imageFile.ContentType;
+
+            var name = Path.ChangeExtension($"{vehicleId}-{DateTime.Now.Ticks}", extension);
+
+            // Upload the file if less than 2 MB
+            if (memoryStream.Length >= 2097152)
+                throw new FileTooLargeException();
+
+            _logger.LogInformation("Uploading image file {FileName}: {Size:#.00kB}", imageFile.FileName, memoryStream.Length / 1024M);
+            var file = new VehicleImage()
+            {
+                ImageData = memoryStream.ToArray(),
+                FileName = name,
+                VehicleId = vehicleId,
+                MimeType = mimeType,
+            };
+            _dbContext.VehicleImages.Add(file);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            _logger.LogInformation("Upload successfull");
         }
     }
 }
