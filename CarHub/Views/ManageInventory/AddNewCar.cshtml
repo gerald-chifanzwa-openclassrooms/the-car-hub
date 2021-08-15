@@ -4,6 +4,8 @@
 @{
     ViewData["Title"] = "AddNewCar";
     var makes = await vehicleMakeService.GetVehicleMakes(default);
+    var yearRange = Enumerable.Range(1990, DateTime.Today.Year - 1990 + 1).OrderByDescending(v => v);
+
 }
 
 <h1>AddNewCar</h1>
@@ -16,11 +18,11 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="MakeId" class="control-label"></label>
-                 @Html.DropDownListFor(m => m.MakeId,
-                                            makes.Select(s => 
-                                                    new SelectListItem() { Text = s.Name, Value = s.Id.ToString()}
-                                                    ),
-                                                    new { @class="form-control"})
+                @Html.DropDownListFor(m => m.MakeId,
+                makes.Select(s =>
+                new SelectListItem() { Text = s.Name, Value = s.Id.ToString()}
+                ),
+                new { @class="form-control"})
                 <span asp-validation-for="MakeId" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -35,7 +37,11 @@
             </div>
             <div class="form-group">
                 <label asp-for="Year" class="control-label"></label>
-                <input asp-for="Year" class="form-control" />
+                @Html.DropDownListFor(m => m.Year,
+                yearRange.Select(val =>
+                new SelectListItem() { Text = val.ToString(), Value = val.ToString()}
+                ),
+                new { @class="form-control"})
                 <span asp-validation-for="Year" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -45,7 +51,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="PurchaseDate" class="control-label"></label>
-                <input asp-for="PurchaseDate" class="form-control" type="date"/>
+                <input asp-for="PurchaseDate" class="form-control date-picker" />
                 <span asp-validation-for="PurchaseDate" class="text-danger"></span>
             </div>
             <div class="form-group">

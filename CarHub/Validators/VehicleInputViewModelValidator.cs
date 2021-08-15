@@ -52,8 +52,8 @@ namespace CarHub.Validators
 
             RuleFor(v => v.PurchaseDate)
                 .NotEmpty()
-                .LessThanOrEqualTo(DateTime.UtcNow)
-                .WithMessage("Purchase date cannot be in the future");
+                .Must((value) => value <= DateTime.UtcNow && value > new DateTime(2020, 1, 1))
+                .WithMessage("Vehicles must have been captured within the last few months");
         }
     }
 }
