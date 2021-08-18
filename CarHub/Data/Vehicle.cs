@@ -15,5 +15,6 @@ namespace CarHub.Data
         public decimal PurchasePrice { get; set; }
         public LotStatus Status { get; set; }
         public ICollection<VehicleImage> Images { get; set; } = new List<VehicleImage>();
+        public ICollection<RepairDetail> Repairs { get; set; } = new List<RepairDetail>();
     }
 }

@@ -36,10 +36,12 @@ namespace CarHub
 
             services.AddFluentValidation(options => options.DisableDataAnnotationsValidation = false)
                     .AddTransient<IValidator<VehicleInputViewModel>, VehicleInputViewModelValidator>()
-                    .AddTransient<IValidator<VehicleImageUploadViewModel>, VehicleImageUploadViewModelValidator>();
+                    .AddTransient<IValidator<VehicleImageUploadViewModel>, VehicleImageUploadViewModelValidator>()
+                    .AddTransient<IValidator<VehicleRepairInputViewModel>, VehicleRepairInputViewModelValidator>();
 
             services.AddScoped<IVehicleMakeService, VehicleMakeService>();
             services.AddScoped<IInventoryService, InventoryService>();
+            services.AddScoped<IVehicleRepairsService, VehicleRepairsService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

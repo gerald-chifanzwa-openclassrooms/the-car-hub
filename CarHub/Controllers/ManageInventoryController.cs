@@ -103,5 +103,21 @@ namespace CarHub.Controllers
                 return View();
             }
         }
+
+
+        [HttpGet("{id:int}/AddRepair")]
+        public IActionResult AddRepair() => View();
+
+        [HttpPost("{id:int}/AddRepair"), ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddRepair(int id, VehicleRepairInputViewModel model, [FromServices] IVehicleRepairsService repairsService, CancellationToken cancellation)
+        {
+            if (!ModelState.IsValid) return View(model);
+            var repair = await repairsService.AddRepair(id, model, cancellation);
+
+            if (repair != null) return RedirectToAction("Details", new { id = repair.VehicleId });
+
+            ModelState.AddModelError("", "Failed to save repair due to an error");
+            return View(model);
+        }
     }
 }

@@ -1,7 +1,8 @@
 ﻿@model CarHub.Models.VehicleDetailsViewModel
-
+@inject CarHub.Services.IVehicleRepairsService repairsService
 @{
     ViewData["Title"] = "Details";
+    var repairs = await repairsService.GetVehicleRepairs(Model.Id, default);
 }
 
 <h1>Vehicle Details</h1>
@@ -69,7 +70,7 @@
         @foreach (var image in Model.Images)
         {
             <div class="col">
-                <img src="@image" alt="Vehicle Image" class="img-fluid rounded"/>
+                <img src="@image" alt="Vehicle Image" class="img-fluid rounded" />
             </div>
         }
     </div>
@@ -80,4 +81,39 @@
     @Html.ActionLink("Publish For Sale", "Publish", new { id = Model.Id }) |
     @Html.ActionLink("Add Photos", "UploadImage", new { id = Model.Id }) |
     <a asp-action="Index">Back to List</a>
+</div>
+
+<h4>Repairs</h4>
+@if (repairs.Count > 0)
+{
+    <div class="list-group">
+        @foreach (var repair in repairs)
+        {
+            <div class="list-group-item d-flex justify-content-between align-items-start">
+                <div class="ms-2 me-auto">
+                    <div class="fw-bold">@Html.DisplayFor(_ => repair.Description)</div>
+                    @Html.DisplayFor(_ => repair.RepairDate)
+                </div>
+                <span class="badge bg-primary text-lg rounded-pill">@Html.DisplayFor(_ => repair.Cost)</span>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="p-5 mb-4 bg-light rounded-3">
+        <div class="container-fluid">
+            <h3 class="display-5 fw-bold">No repairs were applied to this vehicle</h3>
+            <p class="col-md-8 fs-4">
+                Please add any work you did on the vehicle to reflect the true cost
+            </p>
+        </div>
+    </div>
+}
+<div class="row">
+    <div class="col">
+        <a class="btn btn-primary" asp-action="AddRepair" asp-route-id="@Model.Id">
+            Add Repair
+        </a>
+    </div>
 </div>
