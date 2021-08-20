@@ -2,31 +2,54 @@
 @model IEnumerable<CarHub.Models.VehicleViewModel>
 
 @{
-    ViewData["Title"] = "View";
+    ViewData["Title"] = "Home";
 }
-
-<h1>Welcome to Eddie's Car Sale</h1>
-
-@if(@Model.Any()){
-    <div class="list-group">
-        @foreach(var car in Model)
-        {
-            <a class="list-group-item" asp-action="Details" asp-route-id="@car.Id">
-                @Html.DisplayFor(c => car.Year)
-                @Html.DisplayFor(c => car.Make)
-                @Html.DisplayFor(c => car.Model)
-                @Html.DisplayFor(c => car.Trim)
-            </a>
-        }
+<div class="flex flex-col items-stretch">
+    <div class="px-2 md:px-4 py-16 text-center bg-gray-200">
+        <h1 class="text-7xl font-bold font-sans text-indigo-700">Welcome to Eddie's Car Sale</h1>
     </div>
-}
-else{
-    <div class="p-5 mb-4 bg-light rounded-3">
-      <div class="container-fluid py-5">
-        <h1 class="display-5 fw-bold">We don't have any vehicles in our inventory yet</h1>
-        <p class="col-md-8 fs-4">
-            Be sure to check regularly to view new inventory, and to stay up to date with our latest offers
-        </p>
-      </div>
-    </div>
-}
+
+    @if (@Model.Any())
+    {
+        <div class="px-2 sm:px-4 md:px-8 py-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-8 gap-x-4">
+            @foreach (var car in Model)
+            {
+                <a class="block" asp-action="Details" asp-route-id="@car.Id">
+                    <div>
+                        <div class="relative pb-5/6">
+                            <img class="absolute inset-0 h-full w-full rounded-lg shadow-md object-cover" src="" alt="">
+                        </div>
+                        <div class="relative px-4">
+                            <div class="bg-white rounded-lg px-4 py-4 shadow-lg">
+                                <h4 class="mt-1 text-gray-900 font-semibold text-lg">
+                                    @Html.DisplayFor(c => car.Make)
+                                    @Html.DisplayFor(c => car.Model)
+                                </h4>
+                                <div class="flex items-baseline">
+                                    <div class="text-xs text-gray-600 font-semibold uppercase tracking-wide">
+                                        @Html.DisplayFor(c => car.Year) &bull;
+                                        @Html.DisplayFor(c => car.Trim)
+                                    </div>
+                                </div>
+                                <div class="mt-1">
+                                    <span class="text-gray-900">@Html.DisplayFor(c => car.SellingPrice)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="p-5 mb-4 bg-light rounded-3">
+            <div class="container-fluid py-5">
+                <h1 class="display-5 fw-bold">We don't have any vehicles in our inventory yet</h1>
+                <p class="col-md-8 fs-4">
+                    Be sure to check regularly to view new inventory, and to stay up to date with our latest offers
+                </p>
+            </div>
+        </div>
+    }
+</div>

@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>8b84ab1a-09f8-405b-8eba-c28f14376f21</UserSecretsId>
+    <NpmLastInstall>node_modules/.last-install</NpmLastInstall>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,4 +19,20 @@
     <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
   </ItemGroup>
 
+
+  <Target Name="CheckForNpm" BeforeTargets="NpmInstall">
+    <Exec Command="npm -v" ContinueOnError="true">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+    </Exec>
+    <Error Condition="'$(ErrorCode)' != '0'" Text="NPM is required to build this project" />
+  </Target>
+
+  <Target Name="NpmInstall" BeforeTargets="BuildCSS" Inputs="package.json" Outputs="$(NpmLastInstall)">
+    <Exec Command="npm install" />
+    <Touch Files="$(NpmLastInstall)" AlwaysCreate="true" />
+  </Target>
+
+  <Target Name="BuildCSS" BeforeTargets="Compile">
+    <Exec Command="npm run buildcss:dev"/>
+  </Target>
 </Project>

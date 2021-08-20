@@ -30,7 +30,7 @@ namespace CarHub.Extensions
 
             if (user != null)
             {
-                logger.LogInformation("Skipping user initialization because user is already added. {@User}", user);
+                logger.LogInformation("Skipping user initialization because user is already added. {@User}", new { user.Id, user.Email, user.UserName });
                 return;
             }
 

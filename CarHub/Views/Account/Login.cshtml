@@ -1,39 +1,45 @@
 ﻿@{
-    ViewData ["Title"] = "Home Page";
+    ViewData["Title"] = "Login";
     @model LoginViewModel;
 }
-<div class="container">
-    <div class="row">
-        <h1 class="heading">Login</h1>
-    </div>
-    <div class="row">
-        @using (Html.BeginForm("Login", "Account", FormMethod.Post,
-        new
-        {
-           @class = "d-flex flex-column align-items-stretch"
-        }))
-        {
-
-            <div class="form-group">
-                @Html.LabelFor(x=>x.Email)
-                @Html.TextBoxFor(x=>x.Email, new { @class="form-control"})
+<div class="w-full h-full py-12">
+    <div class="my-4 md:my-12 mx-auto relative w-full max-w-lg">
+        <div class="absolute bg-gradient-to-r transform -rotate-6 inset-0 rounded-3xl from-indigo-500 to-purple-400"></div>
+        <div class="relative shadow-lg rounded-2xl bg-white z-10 px-2 sm:px-4 md:px-8">
+            <div class="py-4 px-2 text-center">
+                <h1 class="text-4xl font-bold text-indigo-700 font-sans">Login</h1>
             </div>
-            <div class="form-group">
-                @Html.LabelFor(x=>x.Password)
-                @Html.TextBoxFor(x=>x.Password, new { @class="form-control", @type="password"})
-            </div>
-            <div class="form-group">
-                <button class="btn btn-primary w-100" type="submit">Login</button>
-            </div>
-            <div class="col-xl-12" style="margin-top:40px;">
-                @foreach (var modeleState in ViewData.ModelState.Values)
+            <div class="">
+                @using (Html.BeginForm("Login", "Account", FormMethod.Post,
+                new
                 {
-                    foreach (var error in modeleState.Errors)
-                    {
-                        <h5 style="color:red;margin-top:8px;">@error.ErrorMessage</h5>
-                    }
+                   @class = "grid grid-cols-1 gap-y-2"
+                }))
+                {
+                    <div class="flex flex-col">
+                        @Html.LabelFor(x=>x.Email)
+                        @Html.TextBoxFor(x=>x.Email, new { @class="form-control"})
+                    </div>
+                    <div class="flex flex-col">
+                        @Html.LabelFor(x=>x.Password)
+                        @Html.TextBoxFor(x=>x.Password, new { @class="form-control", @type="password"})
+                    </div>
+
+                    <div class="mt-2">
+                        <button class="btn btn-primary w-full" type="submit">Login</button>
+                    </div>
+                    <div class="flex flex-col mt-2">
+                        @foreach (var modeleState in ViewData.ModelState.Values)
+                        {
+                            foreach (var error in modeleState.Errors)
+                            {
+                                <h5 class="text-red-600 text-base font-sans mb-2">@error.ErrorMessage</h5>
+                            }
+                        }
+                    </div>
                 }
             </div>
-        }
+        </div>
+
     </div>
 </div>

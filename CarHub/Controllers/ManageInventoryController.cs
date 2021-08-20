@@ -26,7 +26,7 @@ namespace CarHub.Controllers
         }
 
         [HttpGet("Add")]
-        public IActionResult AddNewCar() => View();
+        public IActionResult AddNewCar() => View(new VehicleInputViewModel());
 
         [HttpPost("Add")]
         [ValidateAntiForgeryToken]
@@ -103,7 +103,6 @@ namespace CarHub.Controllers
                 return View();
             }
         }
-
 
         [HttpGet("{id:int}/AddRepair")]
         public IActionResult AddRepair() => View();
