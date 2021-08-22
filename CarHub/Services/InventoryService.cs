@@ -26,19 +26,20 @@ namespace CarHub.Services
             _logger = logger;
         }
 
-        public async Task<IEnumerable<VehicleViewModel>> GetAllVehiclesAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<VehicleDetailsViewModel>> GetAllVehiclesAsync(CancellationToken cancellationToken)
         {
             var user = _httpContextAccessor.HttpContext.User;
             var query = _dbContext.Vehicles
                                                    .Include(v => v.Status)
                                                    .Include(v => v.Make)
+                                                   .Include(v => v.Images)
                                                    .Where(v => v.Status.Status != LotDisplayStatus.Sold);
             if (!user.Identity.IsAuthenticated)
             {
                 query = query.Where(v => v.Status.Status != LotDisplayStatus.Hidden);
             }
 
-            var vehicles = await query.Select(v => new VehicleViewModel
+            var vehicles = await query.Select(v => new VehicleDetailsViewModel
             {
                 Id = v.Id,
                 Make = v.Make.Name,
@@ -48,6 +49,9 @@ namespace CarHub.Services
                 PurchaseDate = v.PurchaseDate,
                 PurchasePrice = v.PurchasePrice,
                 MakeId = v.Make.Id,
+                SellingPrice = v.Status.SellingPrice,
+                Status = v.Status.Status,
+                Images = v.Images.Select(img => $"/images/{v.Id}/{img.FileName}").ToList()
             }).ToListAsync(cancellationToken);
 
             return vehicles;

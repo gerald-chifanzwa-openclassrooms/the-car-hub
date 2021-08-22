@@ -1,5 +1,5 @@
 ﻿@using System.Linq
-@model IEnumerable<CarHub.Models.VehicleViewModel>
+@model IEnumerable<CarHub.Models.VehicleDetailsViewModel>
 
 @{
     ViewData["Title"] = "Home";
@@ -15,24 +15,29 @@
             @foreach (var car in Model)
             {
                 <a class="block" asp-action="Details" asp-route-id="@car.Id">
-                    <div>
-                        <div class="relative pb-5/6">
-                            <img class="absolute inset-0 h-full w-full rounded-lg shadow-md object-cover" src="" alt="">
+                    <div class="relative">
+                        <div class="relative py-32 bg-black rounded-lg overflow-hidden">
+                            @if (car.Images.Any())
+                            {
+                                <img class="absolute inset-0 h-full w-full rounded-lg shadow-md object-cover" src="@car.Images.First()" alt="">
+                            }
                         </div>
-                        <div class="relative px-4">
-                            <div class="bg-white rounded-lg px-4 py-4 shadow-lg">
-                                <h4 class="mt-1 text-gray-900 font-semibold text-lg">
-                                    @Html.DisplayFor(c => car.Make)
-                                    @Html.DisplayFor(c => car.Model)
-                                </h4>
-                                <div class="flex items-baseline">
-                                    <div class="text-xs text-gray-600 font-semibold uppercase tracking-wide">
-                                        @Html.DisplayFor(c => car.Year) &bull;
-                                        @Html.DisplayFor(c => car.Trim)
+                        <div class="absolute inset-x-0 bottom-0 px-4 transform translate-y-1/2">
+                            <div class="bg-white rounded-lg px-4 py-4 shadow-lg flex items-center">
+                                <div class="flex-grow">
+                                    <h4 class="mt-1 text-gray-900 font-semibold text-2xl">
+                                        @Html.DisplayFor(c => car.Make)
+                                        @Html.DisplayFor(c => car.Model)
+                                    </h4>
+                                    <div class="flex items-baseline">
+                                        <div class="text-lg text-gray-600 font-semibold uppercase tracking-wide">
+                                            @Html.DisplayFor(c => car.Year) &bull;
+                                            @Html.DisplayFor(c => car.Trim)
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="mt-1">
-                                    <span class="text-gray-900">@Html.DisplayFor(c => car.SellingPrice)</span>
+                                <div class="flex-shrink-0 rounded-md bg-green-100 px-4 py-2">
+                                    <span class="text-4xl font-bold text-green-600">@Html.DisplayFor(c => car.SellingPrice)</span>
                                 </div>
                             </div>
                         </div>
