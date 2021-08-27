@@ -5,114 +5,116 @@
     var repairs = await repairsService.GetVehicleRepairs(Model.Id, default);
 }
 
-<h1>Vehicle Details</h1>
+<div class="flex flex-col items-stretch">
+    <div class="px-2 md:px-4 py-4 text-center bg-gray-200">
+        <h1 class="text-7xl font-bold font-sans text-indigo-700">
+            Vehicle Details
+        </h1>
 
-<div>
-    <h4>
-        @Html.DisplayFor(model => model.Year)
-        @Html.DisplayFor(model => model.Make)
-        @Html.DisplayFor(model => model.Model)
-        @Html.DisplayFor(model => model.Trim)
-    </h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Make)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Make)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Model)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Model)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Trim)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Trim)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Year)
-        </dt>
-        <dd class="col-sm-10">
+        <p class="text-2xl text-gray-600 font-sans">
             @Html.DisplayFor(model => model.Year)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.PurchaseDate)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.PurchaseDate)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.PurchasePrice)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.PurchasePrice)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.SellingPrice)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.SellingPrice)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-    </dl>
+            @Html.DisplayFor(model => model.Make)
+            @Html.DisplayFor(model => model.Model)
+            @Html.DisplayFor(model => model.Trim)
+        </p>
+    </div>
 
-    <div class="row">
+    <div class="w-full px-16 py-8 flex flex-row items-center gap-x-2">
+        <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="Index">Back to List</a>
+        <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="EditCar" asp-route-id="@Model.Id">Edit</a>
+        <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="Publish" asp-route-id="@Model.Id">Publish For Sale</a>
+        <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="UploadImage" asp-route-id="@Model.Id">Add Photos</a>
+
+    </div>
+    <div class="mx-auto w-full px-8 py-4 flex flex-col items-stretch gap-y-2">
+        <dl class="grid grid-cols-2 gap-x-4 gap-y-2">
+            <dt class="text-right text-gray-500">
+                @Html.DisplayNameFor(model => model.Make)
+            </dt>
+            <dd class="text-left text-gray-900 font-bold">
+                @Html.DisplayFor(model => model.Make)
+            </dd>
+            <dt class="text-right text-gray-500">
+                @Html.DisplayNameFor(model => model.Model)
+            </dt>
+            <dd class="text-left text-gray-900 font-bold">
+                @Html.DisplayFor(model => model.Model)
+            </dd>
+            <dt class="text-right text-gray-500">
+                @Html.DisplayNameFor(model => model.Trim)
+            </dt>
+            <dd class="text-left text-gray-900 font-bold">
+                @Html.DisplayFor(model => model.Trim)
+            </dd>
+            <dt class="text-right text-gray-500">
+                @Html.DisplayNameFor(model => model.Year)
+            </dt>
+            <dd class="text-left text-gray-900 font-bold">
+                @Html.DisplayFor(model => model.Year)
+            </dd>
+            <dt class="text-right text-gray-500">
+                @Html.DisplayNameFor(model => model.PurchaseDate)
+            </dt>
+            <dd class="text-left text-gray-900 font-bold">
+                @Html.DisplayFor(model => model.PurchaseDate)
+            </dd>
+            <dt class="text-right text-gray-500">
+                @Html.DisplayNameFor(model => model.PurchasePrice)
+            </dt>
+            <dd class="text-left text-gray-900 font-bold">
+                @Html.DisplayFor(model => model.PurchasePrice)
+            </dd>
+            <dt class="text-right text-gray-500">
+                @Html.DisplayNameFor(model => model.SellingPrice)
+            </dt>
+            <dd class="text-left text-gray-900 font-bold">
+                @Html.DisplayFor(model => model.SellingPrice)
+            </dd>
+        </dl>
+    </div>
+    <div class="grid grid-cols-3 gap-y-2 gap-x-4 px-16">
         @foreach (var image in Model.Images)
         {
-            <div class="col">
-                <img src="@image" alt="Vehicle Image" class="img-fluid rounded" />
+            <div class="h-64 rounded shadow overflow-hidden">
+                <img src="@image" alt="Vehicle Image" class="img-thumbnail h-full w-full object-cover" />
             </div>
         }
     </div>
-</div>
-<div>
-    @Html.ActionLink("Edit", "EditCar", new { id = Model.Id }) |
-    @Html.ActionLink("Publish For Sale", "Publish", new { id = Model.Id }) |
-    @Html.ActionLink("Add Photos", "UploadImage", new { id = Model.Id }) |
-    <a asp-action="Index">Back to List</a>
-</div>
+    <div class="px-16">
 
-<h4>Repairs</h4>
-@if (repairs.Count > 0)
-{
-    <div class="list-group">
-        @foreach (var repair in repairs)
+        <h4 class="text-2xl text-indigo-700 font-bold">Repairs</h4>
+        @if (repairs.Count > 0)
         {
-            <div class="list-group-item d-flex justify-content-between align-items-start">
-                <div class="ms-2 me-auto">
-                    <div class="fw-bold">@Html.DisplayFor(_ => repair.Description)</div>
-                    @Html.DisplayFor(_ => repair.RepairDate)
-                </div>
-                <span class="badge bg-primary text-lg rounded-pill">@Html.DisplayFor(_ => repair.Cost)</span>
+            <div class="flex flex-col gap-y-2">
+                @foreach (var repair in repairs)
+                {
+                    <div class="flex justify-between items-start">
+                        <div class="flex flex-col">
+                            <div class="font-bold">@Html.DisplayFor(_ => repair.Description)</div>
+                            <span class="text-gray-600">@Html.DisplayFor(_ => repair.RepairDate)</span>
+                        </div>
+                        <span class="bg-bg-green-100 text-green-600">@Html.DisplayFor(_ => repair.Cost)</span>
+                    </div>
+                }
             </div>
         }
-    </div>
-}
-else
-{
-    <div class="p-5 mb-4 bg-light rounded-3">
-        <div class="container-fluid">
-            <h3 class="display-5 fw-bold">No repairs were applied to this vehicle</h3>
-            <p class="col-md-8 fs-4">
-                Please add any work you did on the vehicle to reflect the true cost
-            </p>
+        else
+        {
+            <div class="p-5 mb-4 bg-light rounded-3">
+                <div class="container-fluid">
+                    <h3 class="display-5 fw-bold">No repairs were applied to this vehicle</h3>
+                    <p class="col-md-8 fs-4">
+                        Please add any work you did on the vehicle to reflect the true cost
+                    </p>
+                </div>
+            </div>
+        }
+        <div class="row">
+            <div class="col">
+                <a class="btn btn-primary" asp-action="AddRepair" asp-route-id="@Model.Id">
+                    Add Repair
+                </a>
+            </div>
         </div>
-    </div>
-}
-<div class="row">
-    <div class="col">
-        <a class="btn btn-primary" asp-action="AddRepair" asp-route-id="@Model.Id">
-            Add Repair
-        </a>
     </div>
 </div>
