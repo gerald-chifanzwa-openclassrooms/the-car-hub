@@ -2204,8 +2204,16 @@ select {
   right: 0px;
 }
 
+.top-8 {
+  top: 2rem;
+}
+
 .bottom-0 {
   bottom: 0px;
+}
+
+.left-8 {
+  left: 2rem;
 }
 
 .isolate {
@@ -2218,6 +2226,10 @@ select {
 
 .z-10 {
   z-index: 10;
+}
+
+.z-50 {
+  z-index: 50;
 }
 
 .col-span-2 {
@@ -2320,6 +2332,10 @@ select {
 
 .mb-4 {
   margin-bottom: 1rem;
+}
+
+.mb-16 {
+  margin-bottom: 4rem;
 }
 
 .ml-8 {
@@ -2426,6 +2442,10 @@ select {
   height: 16rem;
 }
 
+.h-auto {
+  height: auto;
+}
+
 .h-full {
   height: 100%;
 }
@@ -2440,6 +2460,10 @@ select {
 
 .w-64 {
   width: 16rem;
+}
+
+.w-auto {
+  width: auto;
 }
 
 .w-1\/2 {
@@ -3744,6 +3768,10 @@ select {
 .subpixel-antialiased {
   -webkit-font-smoothing: auto;
   -moz-osx-font-smoothing: auto;
+}
+
+.opacity-75 {
+  opacity: 0.75;
 }
 
 .bg-blend-normal {
