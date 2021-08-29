@@ -229,5 +229,37 @@ namespace CarHub.Services
             await _dbContext.SaveChangesAsync(cancellationToken);
             _logger.LogInformation("Upload successfull");
         }
+
+        public async Task<VehicleViewModel> PublishVehicle(int vehicleId, PublishVehicleViewModel vehicle, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Finding vehicle with Id {VehicleId} for publish", vehicleId);
+            var vehicleEntity = await _dbContext.Vehicles
+                                                    .Include(v => v.Status)
+                                                    .Include(v => v.Make)
+                                                    .FirstOrDefaultAsync(v => v.Id == vehicleId, cancellationToken);
+
+            _logger.LogInformation("Vehicle lookup complete. Result: {@VehicleEntity}", vehicleEntity);
+
+            if (vehicleEntity == null) throw new VehicleNotFoundException { VehicleId = vehicleId };
+
+            vehicleEntity.Status.SellingPrice = vehicle.SellingPrice;
+            vehicleEntity.Status.Status = LotDisplayStatus.Show;
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation("Vehicle {VehicleId} successfully published at ${SellingPrice:#,##0.00}", vehicleId, vehicle.SellingPrice);
+
+            return new VehicleViewModel
+            {
+                Id = vehicleEntity.Id,
+                Make = vehicleEntity.Make.Name,
+                Model = vehicleEntity.Model,
+                Trim = vehicleEntity.Trim,
+                Year = vehicleEntity.Year,
+                PurchaseDate = vehicleEntity.PurchaseDate,
+                PurchasePrice = vehicleEntity.PurchasePrice,
+                MakeId = vehicleEntity.Make.Id,
+            };
+        }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CarHub.Exceptions;
+using System;
 
 namespace CarHub.Controllers
 {
@@ -26,10 +27,9 @@ namespace CarHub.Controllers
         }
 
         [HttpGet("Add")]
-        public IActionResult AddNewCar() => View(new VehicleInputViewModel());
+        public IActionResult AddNewCar() => View(new VehicleInputViewModel() { PurchaseDate = DateTime.Today });
 
-        [HttpPost("Add")]
-        [ValidateAntiForgeryToken]
+        [HttpPost("Add"), ValidateAntiForgeryToken]
         public async Task<ActionResult> AddNewCar(VehicleInputViewModel viewModel, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid) return View(viewModel);
@@ -117,6 +117,26 @@ namespace CarHub.Controllers
 
             ModelState.AddModelError("", "Failed to save repair due to an error");
             return View(model);
+        }
+
+        [HttpGet("{id:int}/Publish")]
+        public async Task<IActionResult> Publish(int id, CancellationToken cancellationToken)
+        {
+            var vehicleDetails = await _inventoryService.GetVehicleAsync(id, cancellationToken);
+            return vehicleDetails switch
+            {
+                null => NotFound(),
+                { Status: Data.LotDisplayStatus.Hidden } => View(new PublishVehicleViewModel(vehicleDetails)),
+                _ => RedirectToAction(nameof(Details), new { id })
+            };
+        }
+
+        [HttpPost("{id:int}/Publish"), ValidateAntiForgeryToken]
+        public async Task<IActionResult> Publish(int id, PublishVehicleViewModel vehicleModel, CancellationToken cancellationToken)
+        {
+            if (!ModelState.IsValid) return View(vehicleModel);
+            var vehicle = await _inventoryService.PublishVehicle(id, vehicleModel, cancellationToken);
+            return RedirectToAction(nameof(Details), new { id = vehicle.Id });
         }
     }
 }

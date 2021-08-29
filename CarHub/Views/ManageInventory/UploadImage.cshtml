@@ -2,37 +2,44 @@
 @model CarHub.Models.VehicleImageUploadViewModel
 @inject CarHub.Services.IInventoryService vehicleService
 @{
-    ViewData["Title"] = "EditCar";
+    ViewData["Title"] = "Upload Vehicle Images";
     var id = int.Parse((string)this.ViewContext.RouteData.Values["id"]);
     var vehicleInfo = await vehicleService.GetVehicleAsync(id, default);
 }
 
-<h1>Edit Car</h1>
-
-<h4>
-    @Html.DisplayFor(_ => vehicleInfo.Year)
-    @Html.DisplayFor(_ => vehicleInfo.Make)
-    @Html.DisplayFor(_ => vehicleInfo.Model)
-    @Html.DisplayFor(_ => vehicleInfo.Trim)
-</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form enctype="multipart/form-data" method="post">
-            <div class="form-group">
-                <label asp-for="@Model.File" class="control-label"></label>
-                <input asp-for="@Model.File" type="file" class="form-control" />
-                <span asp-validation-for="@Model.File" class="text-danger"></span>
-            </div>
-            <input class="btn btn-primary" type="submit" value="Upload" />
-        </form>
+<div class="flex flex-col items-stretch">
+    <div class="px-2 md:px-4 py-4 text-center bg-gray-200">
+        <h4 class="text-5xl font-bold text-indigo-700 font-sans">Upload Vehicle Images</h4>
+        <p class="text-2xl text-gray-600 font-sans">
+            @Html.DisplayFor(model => vehicleInfo.Year)
+            @Html.DisplayFor(model => vehicleInfo.Make)
+            @Html.DisplayFor(model => vehicleInfo.Model)
+            @Html.DisplayFor(model => vehicleInfo.Trim)
+        </p>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    <div class="mx-auto w-full max-w-xl my-8 rounded-lg shadow-lg bg-white px-8 py-4">
+        <h5 class="text-lg text-gray-600">Add some photos for the car</h5>
+        <div class="w-full">
+            <form enctype="multipart/form-data" method="post" class="flex flex-col items-stretch gap-y-2 pb-2">
+                <div class="flex flex-col">
+                    <label asp-for="@Model.File" class="control-label"></label>
+                    <input asp-for="@Model.File" type="file" class="form-control" />
+                    <span asp-validation-for="@Model.File" class="text-danger"></span>
+                </div>
+                <div class="flex items-items-stretch gap-x-4">
+                    <input type="submit" value="Upload" class="btn btn-primary" />
+                    <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans"
+                       asp-action="Details"
+                       asp-route-id="@vehicleInfo.Id">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
 
-@section Scripts {
+    @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    }
+</div>
