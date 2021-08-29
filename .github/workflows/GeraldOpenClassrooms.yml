@@ -2,7 +2,7 @@ name: Build and deploy .NET Core app to Linux WebApp GeraldOpenClassrooms
 on:
   push:
     branches:
-    - edit-inventory
+    - main
 env:
   AZURE_WEBAPP_NAME: GeraldOpenClassrooms
   AZURE_WEBAPP_PACKAGE_PATH: CarHub/publish
