@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CarHub.Exceptions;
+using System;
 
 namespace CarHub.Controllers
 {
@@ -26,7 +27,7 @@ namespace CarHub.Controllers
         }
 
         [HttpGet("Add")]
-        public IActionResult AddNewCar() => View(new VehicleInputViewModel());
+        public IActionResult AddNewCar() => View(new VehicleInputViewModel() { PurchaseDate = DateTime.Today });
 
         [HttpPost("Add"), ValidateAntiForgeryToken]
         public async Task<ActionResult> AddNewCar(VehicleInputViewModel viewModel, CancellationToken cancellationToken)

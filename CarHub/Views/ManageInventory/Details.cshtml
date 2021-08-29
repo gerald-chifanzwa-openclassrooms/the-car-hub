@@ -26,6 +26,7 @@
             <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="EditCar" asp-route-id="@Model.Id">Edit</a>
             <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="Publish" asp-route-id="@Model.Id">Publish For Sale</a>
             <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="UploadImage" asp-route-id="@Model.Id">Add Photos</a>
+            <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="AddRepair" asp-route-id="@Model.Id">Add Repair</a>
         }
     </div>
     <div class="grid grid-cols-3 gap-y-2 gap-x-4 px-16">
@@ -82,19 +83,21 @@
             </dd>
         </dl>
     </div>
-    <div class="px-16">
-        <h4 class="text-2xl text-indigo-700 font-bold">Repairs</h4>
+    <div class="px-16 border-t border-gray-400">
+        <h4 class="text-2xl text-indigo-700 font-bold my-6">Repairs</h4>
         @if (repairs.Count > 0)
         {
-            <div class="flex flex-col gap-y-2">
+            <div class="flex flex-col gap-y-2 mb-4">
                 @foreach (var repair in repairs)
                 {
-                    <div class="flex justify-between items-start">
-                        <div class="flex flex-col">
-                            <div class="font-bold">@Html.DisplayFor(_ => repair.Description)</div>
-                            <span class="text-gray-600">@Html.DisplayFor(_ => repair.RepairDate)</span>
+                    <div class="flex justify-between items-center bg-white rounded px-4 py-2 shadow text-lg">
+                        <div class="flex gap-x-4 items-center">
+                            <div class="w-[20ch]">
+                                <span class="text-gray-600 italic font-sans text-sm">@Html.DisplayFor(_ => repair.RepairDate)</span>
+                            </div>
+                            <div class="font-bold text-gray-900">@Html.DisplayFor(_ => repair.Description)</div>
                         </div>
-                        <span class="bg-bg-green-100 text-green-600">@Html.DisplayFor(_ => repair.Cost)</span>
+                        <span class="bg-yellow-100 text-yellow-800 rounded inline-block px-4 py-2 font-mono">@Html.DisplayFor(_ => repair.Cost)</span>
                     </div>
                 }
             </div>
@@ -104,17 +107,6 @@
             <div class="p-5 mb-4 bg-light rounded-3">
                 <div class="container-fluid">
                     <h3 class="display-5 fw-bold">No repairs have been recorded for this vehicle</h3>
-                </div>
-            </div>
-        }
-
-        @if (Model.Status == CarHub.Data.LotDisplayStatus.Hidden)
-        {
-            <div class="mt-2 flex">
-                <div class="w-auto">
-                    <a class="btn btn-primary w-16" asp-action="AddRepair" asp-route-id="@Model.Id">
-                        Add Repair
-                    </a>
                 </div>
             </div>
         }

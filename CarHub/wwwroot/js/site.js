@@ -5,6 +5,6 @@
 $('input.date-picker').pickadate({
     max: true,
     min: -365,
-    formatSubmit: 'dd/mm/yyyy',
+    formatSubmit: 'yyyy-mm-dd',
     hiddenName: true
 });

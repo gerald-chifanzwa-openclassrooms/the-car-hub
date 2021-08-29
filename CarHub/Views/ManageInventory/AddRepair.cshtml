@@ -25,8 +25,8 @@
                 </div>
                 <div class="flex flex-col">
                     <label asp-for="RepairDate" class="control-label"></label>
-                    <input asp-for="RepairDate" class="form-control" />
-                    <span asp-validation-for="RepairDate" class="text-danger date-picker" data-value="@DateTime.Today.ToString("dd/MM/yyyy")" ></span>
+                    <input asp-for="RepairDate" class="form-control date-picker" data-value="@DateTime.Today.ToString("dd/MM/yyyy")" />
+                    <span asp-validation-for="RepairDate" class="text-danger"></span>
                 </div>
                 <div class="flex items-stretch gap-x-2">
                     <input type="submit" value="Save" class="btn btn-primary" />
