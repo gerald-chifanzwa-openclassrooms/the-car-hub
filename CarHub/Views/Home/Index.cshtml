@@ -14,9 +14,9 @@
         <div class="px-2 sm:px-4 md:px-8 py-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-y-8 gap-x-4">
             @foreach (var car in Model)
             {
-                <a class="block" asp-action="Details" asp-route-id="@car.Id">
+                <a class="block mb-16" asp-action="Details" asp-route-id="@car.Id">
                     <div class="relative">
-                        <div class="relative py-32 bg-black rounded-lg overflow-hidden">
+                        <div class="relative py-32 bg-black rounded-lg overflow-hidden shadow-lg">
                             @if (car.Images.Any())
                             {
                                 <img class="absolute inset-0 h-full w-full rounded-lg shadow-md object-cover" src="@car.Images.First()" alt="">
@@ -41,6 +41,14 @@
                                 </div>
                             </div>
                         </div>
+                        @if (car.Status != CarHub.Data.LotDisplayStatus.Show)
+                        {
+                            <div class="absolute top-4 left-8 w-auto h-auto z-50 rounded shadow opacity-75 overflow-hidden">
+                                <div class="px-4 py-2 bg-gray-300 text-gray-900 uppercase font-bold text-lg font-sans">
+                                    @car.Status.ToString()
+                                </div>
+                            </div>
+                        }
                     </div>
                 </a>
             }

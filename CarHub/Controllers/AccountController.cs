@@ -1,5 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using CarHub.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -61,6 +64,24 @@ namespace CarHub.Controllers
         {
             await _signInManager.SignOutAsync().ConfigureAwait(false);
             return Redirect("/");
+        }
+
+        public IActionResult ChangePassword() => View();
+        [HttpPost, Authorize, ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model, CancellationToken cancellationToken)
+        {
+            var userName = User.Identity.Name;
+            var user = await _userManager.FindByNameAsync(userName).ConfigureAwait(false);
+
+            if (user == null) return RedirectToAction(nameof(Login));
+            if (!ModelState.IsValid) return View();
+
+            var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword).ConfigureAwait(false);
+
+            if (result.Succeeded == true) return RedirectToAction(nameof(HomeController.Index), nameof(HomeController));
+
+            foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
+            return View(model);
         }
     }
 }

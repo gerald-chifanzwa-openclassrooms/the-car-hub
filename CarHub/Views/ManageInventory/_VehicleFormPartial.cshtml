@@ -3,7 +3,7 @@
 @inject CarHub.Services.IVehicleMakeService vehicleMakeService
 @{
     var makes = await vehicleMakeService.GetVehicleMakes(default);
-    var yearRange = Enumerable.Range(1990, DateTime.Today.Year - 1990 + 1).OrderByDescending(v => v);
+    var yearRange = Enumerable.Range(1990, DateTime.Today.Year - 1990 + 2).OrderByDescending(v => v);
 }
 
 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
