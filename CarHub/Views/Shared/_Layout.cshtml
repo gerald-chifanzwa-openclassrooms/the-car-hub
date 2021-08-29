@@ -1,41 +1,57 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - CarHub</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <title>@ViewData["Title"] | Eddie's Car Hub</title>
+    <link rel="stylesheet" href="~/css/pickadate/default.css" />
+    <link rel="stylesheet" href="~/css/pickadate/default.date.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">CarHub</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+<body class="min-h-full m-0 w-full flex flex-col items-stretch bg-indigo-50">
+    <header class="bg-gradient-to-r from-indigo-900 to-purple-900 text-white">
+        <nav class="border-b border-indigo-600 shadow mb-3">
+            <div class="flex items-center justify-between">
+                <a class="px-8 py-4 text-2xl italic" asp-area="" asp-controller="Home" asp-action="Index">
+                    EDDIE'S
+                </a>
+
+                <button class="sm:hidden border-0 text-purple-100 hover:text-white"
+                        type="button" data-toggle="collapse"
+                        data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+
+                <div class="flex-grow navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="flex items-center text-lg font-sans">
+                        <li class="group bg-gradient-to-b from-transparent to-transparent hover:from-indigo-500 border-t-4 border-transparent hover:border-indigo-300">
+                            <a class="block px-8 py-4 group-hover:text-indigo-200" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="group bg-gradient-to-b from-transparent to-transparent hover:from-indigo-500 border-t-4 border-transparent hover:border-indigo-300">
+                                <a class="block px-8 py-4 group-hover:text-indigo-200" asp-area="" asp-controller="ManageInventory" asp-action="Index">Inventory</a>
+                            </li>
+                        }
+                        <li class="group bg-gradient-to-b from-transparent to-transparent hover:from-indigo-500 border-t-4 border-transparent hover:border-indigo-300">
+                            <a class="block px-8 py-4 group-hover:text-indigo-200" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                         @if (!User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item float-right">
-                                <a class="nav-link text-dark border rounded-sm border-dark" asp-controller="Account" asp-action="Login">
+                            <li class="group bg-gradient-to-b from-transparent to-transparent hover:from-indigo-500 border-t-4 border-transparent hover:border-indigo-300">
+                                <a class="block px-8 py-4 group-hover:text-indigo-200" asp-controller="Account" asp-action="Login">
                                     Login
                                 </a>
                             </li>
                         }
                         else
                         {
-                            <li class="nav-item float-right">
-                                <a class="nav-link text-dark border rounded-sm border-dark" asp-controller="Account" asp-action="Logout">
+                            <li class="group bg-gradient-to-b from-transparent to-transparent hover:from-indigo-500 border-t-4 border-transparent hover:border-indigo-300">
+                                <a class="block px-8 py-4 group-hover:text-indigo-200" asp-area="" asp-controller="VehicleMakes" asp-action="Index">Car Makes</a>
+                            </li>
+                            <li class="group bg-gradient-to-b from-transparent to-transparent hover:from-indigo-500 border-t-4 border-transparent hover:border-indigo-300">
+                                <a class="block px-8 py-4 group-hover:text-indigo-200" asp-controller="Account" asp-action="Logout">
                                     Logout
                                 </a>
                             </li>
@@ -45,19 +61,20 @@
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="flex-grow">
+        <main role="main" class="w-full pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
+    <footer class="border-t border-gray-200 text-sm">
+        <div class="px-8 py-4 text-sm">
             &copy; 2021 - CarHub - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/pickadate/picker.js"></script>
+    <script src="~/js/pickadate/picker.date.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

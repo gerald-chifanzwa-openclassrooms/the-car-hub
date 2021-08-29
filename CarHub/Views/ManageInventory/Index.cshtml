@@ -1,0 +1,56 @@
+﻿@using System.Linq
+@model IEnumerable<CarHub.Models.VehicleDetailsViewModel>
+
+@{
+    ViewData["Title"] = "Inventory";
+}
+<div class="flex flex-col items-stretch">
+    <div class="px-2 md:px-4 py-4 text-center bg-gray-200">
+        <h1 class="text-7xl font-bold font-sans text-indigo-700">Manage Inventory</h1>
+    </div>
+
+    <div class="mx-auto w-full px-8 py-4 flex gap-4">
+        <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="AddNewCar">Add New Car</a>
+    </div>
+
+    @if (@Model.Any())
+    {
+        <div class="mx-auto w-full px-8 py-4 flex flex-col items-stretch gap-y-2">
+            @foreach (var car in Model)
+            {
+                <a class="bg-white flex items-center rounded shadow px-4 py-2 overflow-hidden transition-transform duration-100 transform scale-100 hover:scale-[1.01]" asp-action="Details" asp-route-id="@car.Id">
+                    <div class="relative w-48 h-24 -mx-4 -my-2 bg-black">
+                        @if (car.Images.Any())
+                        {
+                            <img class="absolute inset-0 h-full w-full object-cover" src="@car.Images.First()" alt="">
+                        }
+                    </div>
+                    <div class="flex flex-col flex-grow ml-8">
+                        <h4 class="font-bold font-sans text-lg text-gray-700">@Html.DisplayFor(c => car.Make) @Html.DisplayFor(c => car.Model)</h4>
+                        <p class="text-indigo-700 text-base font-sans"> @Html.DisplayFor(c => car.Year) &bull; @Html.DisplayFor(c => car.Trim)</p>
+                    </div>
+                    <div class="flex flex-row gap-x-4 items-center w-64">
+                        <span class="flex-grow px-4 py-2 rounded bg-gray-200 text-gray-600 font-bold relative after:absolute after:text-sm after:bottom-0 after:content-['Purchase']">
+                            @Html.DisplayFor(c=>car.PurchasePrice)
+                        </span>
+                        <span class="flex-grow px-4 py-2 rounded bg-green-100 text-green-600 font-bold">
+                            @Html.DisplayFor(c=>car.SellingPrice)
+                        </span>
+                    </div>
+                </a>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="p-5 mb-4 bg-light rounded-3">
+            <div class="container-fluid py-5">
+                <h1 class="display-5 fw-bold">No vehicles available yet</h1>
+                <p class="col-md-8 fs-4">
+                    Please click on the button below to start adding vehicles to your inventory.
+                </p>
+                <a class="btn btn-primary btn-lg" asp-action="AddNewCar">Add Now</a>
+            </div>
+        </div>
+    }
+</div>

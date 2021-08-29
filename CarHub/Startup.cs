@@ -1,6 +1,9 @@
-using System.Threading.Tasks;
 using CarHub.Data;
-using CarHub.Extensions;
+using CarHub.Models;
+using CarHub.Services;
+using CarHub.Validators;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -30,6 +33,15 @@ namespace CarHub
                     .AddEntityFrameworkStores<ApplicationDbContext>()
                     .AddDefaultTokenProviders()
                     .AddRoles<IdentityRole>();
+
+            services.AddFluentValidation(options => options.DisableDataAnnotationsValidation = false)
+                    .AddTransient<IValidator<VehicleInputViewModel>, VehicleInputViewModelValidator>()
+                    .AddTransient<IValidator<VehicleImageUploadViewModel>, VehicleImageUploadViewModelValidator>()
+                    .AddTransient<IValidator<VehicleRepairInputViewModel>, VehicleRepairInputViewModelValidator>();
+
+            services.AddScoped<IVehicleMakeService, VehicleMakeService>();
+            services.AddScoped<IInventoryService, InventoryService>();
+            services.AddScoped<IVehicleRepairsService, VehicleRepairsService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,6 +57,7 @@ namespace CarHub
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseAuthentication();

@@ -14,7 +14,7 @@ namespace CarHub.Data.Configuration
             builder.Property(p => p.Date).IsRequired().HasColumnType("DATE");
             builder.Property(p => p.Description).IsRequired().HasMaxLength(200);
             builder.Property(p => p.VehicleId).IsRequired();
-            builder.HasOne(p => p.Vehicle).WithMany().HasForeignKey(p => p.VehicleId).OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(p => p.Vehicle).WithMany(v => v.Repairs).HasForeignKey(p => p.VehicleId).OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
