@@ -21,10 +21,20 @@
 
     <div class="w-full px-16 py-8 flex flex-row items-center gap-x-2">
         <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="Index">Back to List</a>
-        <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="EditCar" asp-route-id="@Model.Id">Edit</a>
-        <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="Publish" asp-route-id="@Model.Id">Publish For Sale</a>
-        <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="UploadImage" asp-route-id="@Model.Id">Add Photos</a>
-
+        @if (Model.Status == CarHub.Data.LotDisplayStatus.Hidden)
+        {
+            <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="EditCar" asp-route-id="@Model.Id">Edit</a>
+            <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="Publish" asp-route-id="@Model.Id">Publish For Sale</a>
+            <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="UploadImage" asp-route-id="@Model.Id">Add Photos</a>
+        }
+    </div>
+    <div class="grid grid-cols-3 gap-y-2 gap-x-4 px-16">
+        @foreach (var image in Model.Images)
+        {
+            <div class="h-64 rounded shadow overflow-hidden">
+                <img src="@image" alt="Vehicle Image" class="img-thumbnail h-full w-full object-cover" />
+            </div>
+        }
     </div>
     <div class="mx-auto w-full px-8 py-4 flex flex-col items-stretch gap-y-2">
         <dl class="grid grid-cols-2 gap-x-4 gap-y-2">
@@ -72,16 +82,7 @@
             </dd>
         </dl>
     </div>
-    <div class="grid grid-cols-3 gap-y-2 gap-x-4 px-16">
-        @foreach (var image in Model.Images)
-        {
-            <div class="h-64 rounded shadow overflow-hidden">
-                <img src="@image" alt="Vehicle Image" class="img-thumbnail h-full w-full object-cover" />
-            </div>
-        }
-    </div>
     <div class="px-16">
-
         <h4 class="text-2xl text-indigo-700 font-bold">Repairs</h4>
         @if (repairs.Count > 0)
         {
@@ -102,19 +103,20 @@
         {
             <div class="p-5 mb-4 bg-light rounded-3">
                 <div class="container-fluid">
-                    <h3 class="display-5 fw-bold">No repairs were applied to this vehicle</h3>
-                    <p class="col-md-8 fs-4">
-                        Please add any work you did on the vehicle to reflect the true cost
-                    </p>
+                    <h3 class="display-5 fw-bold">No repairs have been recorded for this vehicle</h3>
                 </div>
             </div>
         }
-        <div class="row">
-            <div class="col">
-                <a class="btn btn-primary" asp-action="AddRepair" asp-route-id="@Model.Id">
-                    Add Repair
-                </a>
+
+        @if (Model.Status == CarHub.Data.LotDisplayStatus.Hidden)
+        {
+            <div class="row">
+                <div class="col">
+                    <a class="btn btn-primary" asp-action="AddRepair" asp-route-id="@Model.Id">
+                        Add Repair
+                    </a>
+                </div>
             </div>
-        </div>
+        }
     </div>
 </div>

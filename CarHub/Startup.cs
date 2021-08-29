@@ -37,7 +37,8 @@ namespace CarHub
             services.AddFluentValidation(options => options.DisableDataAnnotationsValidation = false)
                     .AddTransient<IValidator<VehicleInputViewModel>, VehicleInputViewModelValidator>()
                     .AddTransient<IValidator<VehicleImageUploadViewModel>, VehicleImageUploadViewModelValidator>()
-                    .AddTransient<IValidator<VehicleRepairInputViewModel>, VehicleRepairInputViewModelValidator>();
+                    .AddTransient<IValidator<VehicleRepairInputViewModel>, VehicleRepairInputViewModelValidator>()
+                    .AddTransient<IValidator<PublishVehicleViewModel>, PublishVehicleViewModelValidator>();
 
             services.AddScoped<IVehicleMakeService, VehicleMakeService>();
             services.AddScoped<IInventoryService, InventoryService>();
