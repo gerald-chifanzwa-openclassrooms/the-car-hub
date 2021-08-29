@@ -2429,12 +2429,20 @@ select {
   min-height: 100%;
 }
 
+.w-16 {
+  width: 4rem;
+}
+
 .w-48 {
   width: 12rem;
 }
 
 .w-64 {
   width: 16rem;
+}
+
+.w-auto {
+  width: auto;
 }
 
 .w-1\/2 {

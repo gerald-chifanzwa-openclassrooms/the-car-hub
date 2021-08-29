@@ -110,9 +110,9 @@
 
         @if (Model.Status == CarHub.Data.LotDisplayStatus.Hidden)
         {
-            <div class="row">
-                <div class="col">
-                    <a class="btn btn-primary" asp-action="AddRepair" asp-route-id="@Model.Id">
+            <div class="mt-2 flex">
+                <div class="w-auto">
+                    <a class="btn btn-primary w-16" asp-action="AddRepair" asp-route-id="@Model.Id">
                         Add Repair
                     </a>
                 </div>

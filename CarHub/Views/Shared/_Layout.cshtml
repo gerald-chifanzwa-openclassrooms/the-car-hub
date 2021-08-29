@@ -34,9 +34,6 @@
                                 <a class="block px-8 py-4 group-hover:text-indigo-200" asp-area="" asp-controller="ManageInventory" asp-action="Index">Inventory</a>
                             </li>
                         }
-                        <li class="group bg-gradient-to-b from-transparent to-transparent hover:from-indigo-500 border-t-4 border-transparent hover:border-indigo-300">
-                            <a class="block px-8 py-4 group-hover:text-indigo-200" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
                         @if (!User.Identity.IsAuthenticated)
                         {
                             <li class="group bg-gradient-to-b from-transparent to-transparent hover:from-indigo-500 border-t-4 border-transparent hover:border-indigo-300">
