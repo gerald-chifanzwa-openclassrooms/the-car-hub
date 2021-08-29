@@ -10,14 +10,15 @@ namespace CarHub
     public class Program
     {
         private const string LogTemplate = "[{Timestamp:HH:mm:ss, MMM dd yyyy} {Level:u3}]-{SourceContext}{NewLine}{Message:lj} {Exception}{NewLine}";
-        public static async Task Main(string [] args)
+        public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
+            await host.MigrateDatabase();
             await host.CreateDefaultUser();
             await host.RunAsync();
         }
 
-        public static IHostBuilder CreateHostBuilder(string [] args) =>
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
