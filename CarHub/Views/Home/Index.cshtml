@@ -3,6 +3,10 @@
 
 @{
     ViewData["Title"] = "Home";
+    int totalItems = (int)ViewData["TotalItems"];
+    int currentPage = (int)ViewData["CurrentPage"];
+
+    var totalPages = Math.Ceiling(totalItems / 20M);
 }
 <div class="flex flex-col items-stretch">
     <div class="px-2 md:px-4 py-16 text-center bg-gray-200">
@@ -53,6 +57,33 @@
                 </a>
             }
         </div>
+
+        @if (totalPages > 1)
+        {
+            <div class="space-y-2">
+                <h4 class="text-center text-sm text-gray-600 font-sans font-bold leading-tight">
+                    Showing items @((currentPage-1)*20 + 1) to @((currentPage-1)*20 + Model.Count()) of @totalItems
+                </h4>
+            </div>
+            <div class="px-2 sm:px-4 md:px-8 pb-4 flex flex-wrap gap-2 justify-center items-center">
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    @if (i != currentPage)
+                    {
+                        <a class="w-12 h-12 flex items-center justify-center rounded-full transition-all duration-100 border-2 group border-indigo-300 hover:bg-indigo-500 hover:border-indigo-500" asp-action="Index" asp-route-page="@i">
+                            <span class="text-indigo-500 group-hover:text-white">@i</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="w-12 h-12 flex items-center justify-center rounded-full border-2  border-gray-300 bg-gray-500 hover:bg-gray-600">
+                            <span class="text-white">@i</span>
+                        </div>
+                    }
+                }
+            </div>
+
+        }
     }
     else
     {

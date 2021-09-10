@@ -24,7 +24,7 @@ namespace CarHub.Services
             _logger = logger;
         }
 
-        public async Task<IEnumerable<VehicleDetailsViewModel>> GetAllVehiclesAsync(bool isUserAuthenticated, CancellationToken cancellationToken)
+        public async Task<PagedResultSet<VehicleDetailsViewModel>> GetAllVehiclesAsync(int page, int fetchSize, bool isUserAuthenticated, CancellationToken cancellationToken)
         {
             var query = _dbContext.Vehicles
                                            .Include(v => v.Status)
@@ -32,7 +32,7 @@ namespace CarHub.Services
                                            .Include(v => v.Images)
                                            .Where(v => v.Status.Status != LotDisplayStatus.Sold &&
                                                                     (isUserAuthenticated || v.Status.Status != LotDisplayStatus.Hidden));
-
+            var totalCount = await query.CountAsync(cancellationToken);
             var vehicles = await query.Select(v => new VehicleDetailsViewModel
             {
                 Id = v.Id,
@@ -46,9 +46,17 @@ namespace CarHub.Services
                 SellingPrice = v.Status.SellingPrice,
                 Status = v.Status.Status,
                 Images = v.Images.Select(img => $"/images/{v.Id}/{img.FileName}").ToList()
-            }).ToListAsync(cancellationToken);
+            }).OrderBy(v => v.PurchaseDate)
+                .Skip((page - 1) * fetchSize)
+                .Take(fetchSize)
+                .ToListAsync(cancellationToken);
 
-            return vehicles;
+            return new PagedResultSet<VehicleDetailsViewModel>
+            {
+                Items = vehicles,
+                TotalCount = totalCount,
+                CurrentPage = page,
+            };
         }
 
         public async Task<VehicleDetailsViewModel> GetVehicleAsync(int vehicleId, CancellationToken cancellationToken)

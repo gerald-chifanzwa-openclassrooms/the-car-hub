@@ -1,12 +1,9 @@
-﻿using System.IO.Compression;
-using System.IO;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using CarHub.Models;
 using CarHub.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using CarHub.Exceptions;
 using System;
 
@@ -20,10 +17,12 @@ namespace CarHub.Controllers
 
         public ManageInventoryController(IInventoryService inventoryService) => _inventoryService = inventoryService;
 
-        public async Task<IActionResult> Index(CancellationToken cancellation)
+        public async Task<IActionResult> Index([FromQuery(Name = "page")] int pageNumber = 1, CancellationToken cancellation = default)
         {
-            var vehicles = await _inventoryService.GetAllVehiclesAsync(User.Identity.IsAuthenticated, cancellation);
-            return View(vehicles);
+            var vehicles = await _inventoryService.GetAllVehiclesAsync(pageNumber, 20, User.Identity.IsAuthenticated, cancellation);
+            ViewData["TotalItems"] = vehicles.TotalCount;
+            ViewData["CurrentPage"] = vehicles.CurrentPage;
+            return View(vehicles.Items);
         }
 
         [HttpGet("Add")]
