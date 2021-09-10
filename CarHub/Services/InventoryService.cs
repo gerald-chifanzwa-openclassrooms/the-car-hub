@@ -16,28 +16,22 @@ namespace CarHub.Services
     public class InventoryService : IInventoryService
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<InventoryService> _logger;
 
-        public InventoryService(ApplicationDbContext dbContext, IHttpContextAccessor httpContextAccessor, ILogger<InventoryService> logger)
+        public InventoryService(ApplicationDbContext dbContext, ILogger<InventoryService> logger)
         {
             _dbContext = dbContext;
-            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
         }
 
-        public async Task<IEnumerable<VehicleDetailsViewModel>> GetAllVehiclesAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<VehicleDetailsViewModel>> GetAllVehiclesAsync(bool isUserAuthenticated, CancellationToken cancellationToken)
         {
-            var user = _httpContextAccessor.HttpContext.User;
             var query = _dbContext.Vehicles
-                                                   .Include(v => v.Status)
-                                                   .Include(v => v.Make)
-                                                   .Include(v => v.Images)
-                                                   .Where(v => v.Status.Status != LotDisplayStatus.Sold);
-            if (!user.Identity.IsAuthenticated)
-            {
-                query = query.Where(v => v.Status.Status != LotDisplayStatus.Hidden);
-            }
+                                           .Include(v => v.Status)
+                                           .Include(v => v.Make)
+                                           .Include(v => v.Images)
+                                           .Where(v => v.Status.Status != LotDisplayStatus.Sold &&
+                                                                    (isUserAuthenticated || v.Status.Status != LotDisplayStatus.Hidden));
 
             var vehicles = await query.Select(v => new VehicleDetailsViewModel
             {
