@@ -10,7 +10,7 @@ using Xunit;
 
 namespace CarHub.Tests
 {
-    public class InventoryServiceTests
+    public class InventoryServiceTests : IDisposable
     {
         private readonly ApplicationDbContext _dbContext;
         public InventoryServiceTests()
@@ -18,6 +18,7 @@ namespace CarHub.Tests
             var dbContextOptionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
             dbContextOptionsBuilder.UseInMemoryDatabase(nameof(InventoryServiceTests));
             _dbContext = new ApplicationDbContext(dbContextOptionsBuilder.Options);
+            _dbContext.Database.EnsureCreated();
         }
         private InventoryService GetInventoryService()
         {
@@ -37,7 +38,7 @@ namespace CarHub.Tests
             _dbContext.VehicleMakes.AddRange(makes);
             _dbContext.SaveChanges();
 
-            Faker<Vehicle> faker = new ();
+            Faker<Vehicle> faker = new();
             faker.RuleSet("Show", rules => InitializeVehicleGenerationRules(rules, makes, LotDisplayStatus.Show));
 
             faker.RuleSet("Hide", rules => InitializeVehicleGenerationRules(rules, makes, LotDisplayStatus.Hidden));
@@ -54,21 +55,32 @@ namespace CarHub.Tests
             results.Should().OnlyContain(v => v.Status == LotDisplayStatus.Show);
         }
 
-        private static void InitializeVehicleGenerationRules(IRuleSet<Vehicle> rules, VehicleMake[] makes, LotDisplayStatus status)
+        [Fact]
+        public void GetVehicles_WhenUserIsAuthenticated_ShouldOnlyReturnAllVehicles()
         {
-            rules.RuleFor(v => v.Status, (f, v) => new LotStatus
-            {
-                SellDate = null,
-                DateAdded = v.PurchaseDate,
-                SellingPrice = v.PurchasePrice + 500,
-                Status = status
-            });
-            rules.RuleFor(v => v.Model, f => f.Vehicle.Model());
-            rules.RuleFor(v => v.Year, f => f.Date.Past().Year);
-            rules.RuleFor(v => v.MakeId, f => f.Random.ArrayElement(makes).Id);
-            rules.RuleFor(v => v.PurchaseDate, f => f.Date.Recent());
-            rules.RuleFor(v => v.PurchasePrice, f => f.Finance.Random.Number(1000, 10000));
-            rules.RuleFor(v => v.Trim, f => f.Vehicle.Type());
+            // Arrange
+            var inventoryService = GetInventoryService();
+            var makesFaker = new Faker<VehicleMake>();
+            makesFaker.RuleFor(m => m.Name, f => f.Vehicle.Manufacturer());
+
+            var makes = makesFaker.Generate(10).ToArray();
+            _dbContext.VehicleMakes.AddRange(makes);
+            _dbContext.SaveChanges();
+
+            Faker<Vehicle> faker = new();
+            faker.RuleSet("Show", rules => InitializeVehicleGenerationRules(rules, makes, LotDisplayStatus.Show));
+
+            faker.RuleSet("Hide", rules => InitializeVehicleGenerationRules(rules, makes, LotDisplayStatus.Hidden));
+            var vehicles = faker.Generate(5, "Show").Concat(faker.Generate(10, "Hide"));
+
+            _dbContext.Vehicles.AddRange(vehicles);
+            _dbContext.SaveChanges();
+
+            // Act
+            var results = inventoryService.GetAllVehiclesAsync(true, default).GetAwaiter().GetResult();
+
+            // Assert
+            results.Should().HaveCount(15);
         }
 
         [Fact]
@@ -77,8 +89,7 @@ namespace CarHub.Tests
             // Arrange
             var inventoryService = GetInventoryService();
             var makesFaker = new Faker<VehicleMake>();
-            makesFaker.RuleFor(m => m.Name, f => f.Vehicle.Manufacturer())
-                .RuleFor(m => m.Id, f => f.IndexFaker);
+            makesFaker.RuleFor(m => m.Name, f => f.Vehicle.Manufacturer());
 
             var makes = makesFaker.Generate(10).ToArray();
             var faker = new Faker<Vehicle>();
@@ -106,6 +117,29 @@ namespace CarHub.Tests
 
             // Assert
             result.Should().NotBeNull();
+        }
+
+
+        private static void InitializeVehicleGenerationRules(IRuleSet<Vehicle> rules, VehicleMake[] makes, LotDisplayStatus status)
+        {
+            rules.RuleFor(v => v.Status, (f, v) => new LotStatus
+            {
+                SellDate = null,
+                DateAdded = v.PurchaseDate,
+                SellingPrice = v.PurchasePrice + 500,
+                Status = status
+            });
+            rules.RuleFor(v => v.Model, f => f.Vehicle.Model());
+            rules.RuleFor(v => v.Year, f => f.Date.Past().Year);
+            rules.RuleFor(v => v.MakeId, f => f.Random.ArrayElement(makes).Id);
+            rules.RuleFor(v => v.PurchaseDate, f => f.Date.Recent());
+            rules.RuleFor(v => v.PurchasePrice, f => f.Finance.Random.Number(1000, 10000));
+            rules.RuleFor(v => v.Trim, f => f.Vehicle.Type());
+        }
+
+        public void Dispose()
+        {
+            _dbContext.Database.EnsureDeleted();
         }
     }
 }
