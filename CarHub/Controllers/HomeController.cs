@@ -24,7 +24,7 @@ namespace CarHub.Controllers
 
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            var vehicles = await _inventoryService.GetAllVehiclesAsync(cancellationToken);
+            var vehicles = await _inventoryService.GetAllVehiclesAsync(User.Identity.IsAuthenticated, cancellationToken);
             return View(vehicles);
         }
 

@@ -16,43 +16,46 @@ namespace CarHub.Services
     public class InventoryService : IInventoryService
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<InventoryService> _logger;
 
-        public InventoryService(ApplicationDbContext dbContext, IHttpContextAccessor httpContextAccessor, ILogger<InventoryService> logger)
+        public InventoryService(ApplicationDbContext dbContext, ILogger<InventoryService> logger)
         {
             _dbContext = dbContext;
-            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
         }
 
-        public async Task<IEnumerable<VehicleDetailsViewModel>> GetAllVehiclesAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<VehicleDetailsViewModel>> GetAllVehiclesAsync(bool isUserAuthenticated, CancellationToken cancellationToken)
         {
-            var user = _httpContextAccessor.HttpContext.User;
-            var query = _dbContext.Vehicles
-                                                   .Include(v => v.Status)
-                                                   .Include(v => v.Make)
-                                                   .Include(v => v.Images)
-                                                   .Where(v => v.Status.Status != LotDisplayStatus.Sold);
-            if (!user.Identity.IsAuthenticated)
-            {
-                query = query.Where(v => v.Status.Status != LotDisplayStatus.Hidden);
-            }
+            //var query = _dbContext.Vehicles
+            //                                       .Include(v => v.Status)
+            //                                       .Include(v => v.Make)
+            //                                       .Include(v => v.Images)
+            //                                       .Where(v => v.Status.Status != LotDisplayStatus.Sold &&
+            //                                                        (isUserAuthenticated || v.Status.Status != LotDisplayStatus.Hidden));
 
-            var vehicles = await query.Select(v => new VehicleDetailsViewModel
-            {
-                Id = v.Id,
-                Make = v.Make.Name,
-                Model = v.Model,
-                Trim = v.Trim,
-                Year = v.Year,
-                PurchaseDate = v.PurchaseDate,
-                PurchasePrice = v.PurchasePrice,
-                MakeId = v.Make.Id,
-                SellingPrice = v.Status.SellingPrice,
-                Status = v.Status.Status,
-                Images = v.Images.Select(img => $"/images/{v.Id}/{img.FileName}").ToList()
-            }).ToListAsync(cancellationToken);
+            var query = _dbContext.Vehicles
+                                           .Include(v => v.Status)
+                                           .Include(v => v.Make)
+                                           .Include(v => v.Images)
+                                           .Select(v => new VehicleDetailsViewModel
+                                           {
+                                               Id = v.Id,
+                                               Make = v.Make.Name,
+                                               Model = v.Model,
+                                               Trim = v.Trim,
+                                               Year = v.Year,
+                                               PurchaseDate = v.PurchaseDate,
+                                               PurchasePrice = v.PurchasePrice,
+                                               MakeId = v.Make.Id,
+                                               SellingPrice = v.Status.SellingPrice,
+                                               Status = v.Status.Status,
+                                               Images = v.Images.Select(img => $"/images/{v.Id}/{img.FileName}").ToList()
+                                           })
+                                           .Where(v => v.Status == LotDisplayStatus.Show);
+#if DEBUG
+            var allStatuses = _dbContext.Vehicles.Select(v => v.Id + "-" + v.Status.Status.ToString()).ToArray();
+#endif
+            var vehicles = await query.ToListAsync(cancellationToken);
 
             return vehicles;
         }
