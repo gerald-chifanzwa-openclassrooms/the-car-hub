@@ -48,11 +48,11 @@ namespace CarHub.Tests
             _dbContext.SaveChanges();
 
             // Act
-            var results = inventoryService.GetAllVehiclesAsync(false, default).GetAwaiter().GetResult();
+            var results = inventoryService.GetAllVehiclesAsync(1, 100, false, default).GetAwaiter().GetResult();
 
             // Assert
-            results.Should().HaveCount(5);
-            results.Should().OnlyContain(v => v.Status == LotDisplayStatus.Show);
+            results.Items.Should().HaveCount(5);
+            results.Items.Should().OnlyContain(v => v.Status == LotDisplayStatus.Show);
         }
 
         [Fact]
@@ -77,10 +77,10 @@ namespace CarHub.Tests
             _dbContext.SaveChanges();
 
             // Act
-            var results = inventoryService.GetAllVehiclesAsync(true, default).GetAwaiter().GetResult();
+            var results = inventoryService.GetAllVehiclesAsync(1, 100, true, default).GetAwaiter().GetResult();
 
             // Assert
-            results.Should().HaveCount(15);
+            results.Items.Should().HaveCount(15);
         }
 
         [Fact]

@@ -22,10 +22,12 @@ namespace CarHub.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index(CancellationToken cancellationToken)
+        public async Task<IActionResult> Index([FromQuery(Name = "page")] int pageNumber = 1, CancellationToken cancellationToken = default)
         {
-            var vehicles = await _inventoryService.GetAllVehiclesAsync(User.Identity.IsAuthenticated, cancellationToken);
-            return View(vehicles);
+            var vehicles = await _inventoryService.GetAllVehiclesAsync(pageNumber, 20, User.Identity.IsAuthenticated, cancellationToken);
+            ViewData["TotalItems"] = vehicles.TotalCount;
+            ViewData["CurrentPage"] = vehicles.CurrentPage;
+            return View(vehicles.Items);
         }
 
         [HttpGet("{id:int}/Details")]
