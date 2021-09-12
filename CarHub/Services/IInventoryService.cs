@@ -15,5 +15,6 @@ namespace CarHub.Services
         Task<VehicleViewModel> EditVehicle(int vehicleId, VehicleInputViewModel vehicle, CancellationToken cancellationToken);
         Task AddVehicleImage(int vehicleId, IFormFile imageFile, CancellationToken cancellationToken);
         Task<VehicleViewModel> PublishVehicle(int vehicleId, PublishVehicleViewModel vehicle, CancellationToken cancellationToken);
+        Task<VehicleViewModel> FlagSoldVehicle(int vehicleId, VehicleSaleViewModel vehicle, CancellationToken cancellationToken);
     }
 }

@@ -145,5 +145,27 @@ namespace CarHub.Controllers
             var vehicle = await _inventoryService.PublishVehicle(id, vehicleModel, cancellationToken);
             return RedirectToAction(nameof(Details), new { id = vehicle.Id });
         }
+
+
+        [HttpGet("{id:int}/FlagSold")]
+        public async Task<IActionResult> FlagSold(int id, CancellationToken cancellationToken)
+        {
+            var vehicleDetails = await _inventoryService.GetVehicleAsync(id, cancellationToken);
+            return vehicleDetails switch
+            {
+                null => NotFound(),
+                { Status: Data.LotDisplayStatus.Show } => View(new VehicleSaleViewModel(vehicleDetails)),
+                _ => RedirectToAction(nameof(Details), new { id })
+            };
+        }
+
+        [HttpPost("{id:int}/FlagSold")]
+        public async Task<IActionResult> FlagSold(int id, VehicleSaleViewModel viewModel, CancellationToken cancellationToken)
+        {
+            if (!ModelState.IsValid) return View(viewModel);
+            var vehicle = await _inventoryService.FlagSoldVehicle(id, viewModel, cancellationToken);
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }

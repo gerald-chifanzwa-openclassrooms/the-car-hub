@@ -39,7 +39,8 @@ namespace CarHub
                     .AddTransient<IValidator<VehicleImageUploadViewModel>, VehicleImageUploadViewModelValidator>()
                     .AddTransient<IValidator<VehicleRepairInputViewModel>, VehicleRepairInputViewModelValidator>()
                     .AddTransient<IValidator<PublishVehicleViewModel>, PublishVehicleViewModelValidator>()
-                    .AddTransient<IValidator<ChangePasswordViewModel>, ChangePasswordViewModelValidator>();
+                    .AddTransient<IValidator<ChangePasswordViewModel>, ChangePasswordViewModelValidator>()
+                    .AddTransient<IValidator<VehicleSaleViewModel>, VehicleSaleViewModelValidator>();
 
             services.AddScoped<IVehicleMakeService, VehicleMakeService>();
             services.AddScoped<IInventoryService, InventoryService>();

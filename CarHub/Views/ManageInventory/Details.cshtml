@@ -28,6 +28,11 @@
             <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="UploadImage" asp-route-id="@Model.Id">Add Photos</a>
             <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="AddRepair" asp-route-id="@Model.Id">Add Repair</a>
         }
+        @if (Model.Status == CarHub.Data.LotDisplayStatus.Show)
+        {
+            <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="FlagSold" asp-route-id="@Model.Id">Mark as Sold</a>
+            <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="UploadImage" asp-route-id="@Model.Id">Add Photos</a>
+        }
     </div>
     <div class="grid grid-cols-3 gap-y-2 gap-x-4 px-16">
         @foreach (var image in Model.Images)
