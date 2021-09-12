@@ -78,7 +78,7 @@ namespace CarHub.Controllers
 
             var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword).ConfigureAwait(false);
 
-            if (result.Succeeded == true) return RedirectToAction(nameof(HomeController.Index), nameof(HomeController));
+            if (result.Succeeded == true) return RedirectToAction("Index", "Home");
 
             foreach (var error in result.Errors) ModelState.AddModelError(string.Empty, error.Description);
             return View(model);
