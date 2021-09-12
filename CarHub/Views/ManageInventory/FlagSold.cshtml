@@ -1,0 +1,75 @@
+﻿@model CarHub.Models.VehicleSaleViewModel
+@inject CarHub.Services.IVehicleRepairsService repairsService
+@{
+    ViewData["Title"] = "Publish";
+    var repairs = await repairsService.GetVehicleRepairs(Model.Id, default);
+    var totalRepairsCost = repairs.Sum(r => r.Cost);
+}
+
+<div class="flex flex-col items-stretch">
+    <div class="px-2 md:px-4 py-4 text-center bg-gray-200">
+        <h4 class="text-5xl font-bold text-indigo-700 font-sans">Flag Sold Car</h4>
+        <p class="text-2xl text-gray-600 font-sans">
+            @Html.DisplayFor(model => model.Year)
+            @Html.DisplayFor(model => model.Make)
+            @Html.DisplayFor(model => model.Model)
+            @Html.DisplayFor(model => model.Trim)
+        </p>
+    </div>
+
+    <div class="mx-auto w-full max-w-xl my-8 rounded-lg shadow-lg bg-white px-8 py-4">
+        <h5 class="text-lg text-gray-600">Enter the sell price and date</h5>
+        <div class="w-full">
+            <form asp-action="FlagSold" class="flex flex-col items-stretch gap-y-2 pb-2">
+                <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+                    <div class="rounded bg-gray-200 px-4 py-2">
+                        <span class="text-sm text-gray-600 font-bold font-sans">
+                            Purchase Price
+                        </span>
+                        <h4 class="text-2xl font-mono text-gray-900 tracking-wide">
+                            @Html.DisplayFor(model => model.PurchasePrice)
+                        </h4>
+                    </div>
+                    <div class="rounded bg-yellow-100 px-4 py-2">
+                        <span class="text-sm text-yellow-600 font-bold font-sans">
+                            Total Repairs Cost
+                        </span>
+                        <h4 class="text-2xl font-mono text-yellow-900 tracking-wide">
+                            @totalRepairsCost.ToString("$ #,##0.00")
+                        </h4>
+                    </div>
+                    <div class="col-span-2 rounded bg-green-100 px-4 py-2">
+                        <span class="text-sm text-yellow-600 font-bold font-sans">
+                            Advertised Selling Price
+                        </span>
+                        <h4 class="text-2xl font-mono text-yellow-900 tracking-wide">
+                            @Html.DisplayFor(model => model.SellingPrice)
+                        </h4>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <label asp-for="SellingPrice" class="control-label">Actual Selling Price</label>
+                    <input asp-for="SellingPrice" class="form-control" />
+                    <span asp-validation-for="SellingPrice" class="text-sm text-red-600 font-sans font-medium my-1"></span>
+                </div>
+                <div class="flex flex-col">
+                    <label asp-for="SellDate" class="control-label"></label>
+                    <input asp-for="SellDate" class="form-control date-picker" data-value="@Model.SellDate.ToString("dd/MM/yyyy")" />
+                    <span asp-validation-for="SellDate" class="text-sm text-red-600 font-sans font-medium my-1"></span>
+                </div>
+                <div class="flex items-items-stretch gap-x-4">
+                    <input type="submit" value="Submit" class="btn btn-primary" />
+                    <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans"
+                       asp-action="Details"
+                       asp-route-id="@Model.Id">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }
+</div>

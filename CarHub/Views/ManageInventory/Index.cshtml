@@ -1,10 +1,10 @@
 ﻿@using System.Linq
-@model IEnumerable<CarHub.Models.VehicleDetailsViewModel>
+@model CarHub.Models.InventoryListViewModel
 
 @{
     ViewData["Title"] = "Inventory";
-    int totalItems = (int)ViewData["TotalItems"];
-    int currentPage = (int)ViewData["CurrentPage"];
+    int totalItems = Model.TotalVehicles;
+    int currentPage = Model.CurrentPage;
 
     var totalPages = Math.Ceiling(totalItems / 20M);
 }
@@ -13,14 +13,27 @@
         <h1 class="text-7xl font-bold font-sans text-indigo-700">Manage Inventory</h1>
     </div>
 
-    <div class="mx-auto w-full px-8 py-4 flex gap-4">
+    <div class="mx-auto w-full px-8 py-4 flex gap-4 flex justify-between items-start">
         <a class="btn bg-gray-300 text-gray-800 hover:bg-gray-500 transition duration-100 ease-in font-bold font-sans" asp-action="AddNewCar">Add New Car</a>
+        <div class="flex items-center gap-2">
+            <select asp-for="@Model.StatusFilter" class="form-control w-48" id="statusFilterSelect">
+                <option value="">Filter by Status</option>
+                <option value="1">Hidden</option>
+                <option value="2">Showroom</option>
+                <option value="3">Sold</option>
+            </select>
+
+            <a class="btn btn-primary" id="filterByStatusAnchor" href="#">
+                Filter
+            </a>
+        </div>
+
     </div>
 
-    @if (@Model.Any())
+    @if (@Model.Vehicles.Any())
     {
         <div class="mx-auto w-full px-8 py-4 flex flex-col items-stretch gap-y-2">
-            @foreach (var car in Model)
+            @foreach (var car in Model.Vehicles)
             {
                 <a class="bg-white flex items-center rounded shadow px-4 py-2 overflow-hidden transition-transform duration-100 transform scale-100 hover:scale-[1.01]" asp-action="Details" asp-route-id="@car.Id">
                     <div class="relative w-48 h-24 -mx-4 -my-2 bg-black">
@@ -32,6 +45,11 @@
                     <div class="flex flex-col flex-grow ml-8">
                         <h4 class="font-bold font-sans text-lg text-gray-700">@Html.DisplayFor(c => car.Make) @Html.DisplayFor(c => car.Model)</h4>
                         <p class="text-indigo-700 text-base font-sans"> @Html.DisplayFor(c => car.Year) &bull; @Html.DisplayFor(c => car.Trim)</p>
+                    </div>
+                    <div class="w-auto h-auto z-50 opacity-75 overflow-hidden text-gray-900">
+                        <div class="px-4 py-2 uppercase font-bold text-lg font-sans @(car.Status == CarHub.Data.LotDisplayStatus.Show ? "text-green-800":"")" >
+                            @car.Status.ToString()
+                        </div>
                     </div>
                     <div class="flex flex-row gap-x-4 items-center w-64">
                         <span class="flex-grow px-4 py-2 rounded bg-gray-200 text-gray-600 font-bold relative after:absolute after:text-sm after:bottom-0 after:content-['Purchase']">
@@ -50,7 +68,7 @@
 
             <div class="space-y-2">
                 <h4 class="text-center text-sm text-gray-600 font-sans font-bold leading-tight">
-                    Showing items @((currentPage-1)*20 + 1) to @((currentPage-1)*20 + Model.Count()) of @totalItems
+                    Showing items @((currentPage-1)*20 + 1) to @((currentPage-1)*20 + Model.Vehicles.Count()) of @totalItems
                 </h4>
             </div>
             <div class="px-2 sm:px04 md:px-8 pb-4 flex flex-wrap gap-2 justify-center items-center">
@@ -74,10 +92,10 @@
     }
     else
     {
-        <div class="p-5 mb-4 bg-light rounded-3">
-            <div class="container-fluid py-5">
-                <h1 class="display-5 fw-bold">No vehicles available yet</h1>
-                <p class="col-md-8 fs-4">
+        <div class="mx-auto p-5 mb-4 bg-white rounded-lg max-w-2xl shadow-lg">
+            <div class="flex flex-col items-center py-5 px-8 gap-4">
+                <h1 class="text-4xl font-bold font-sans text-gray-600 text-center">No vehicles available yet</h1>
+                <p class="leading-loose font-regular text-indigo-400 text-2xl text-center">
                     Please click on the button below to start adding vehicles to your inventory.
                 </p>
                 <a class="btn btn-primary btn-lg" asp-action="AddNewCar">Add Now</a>
@@ -85,3 +103,23 @@
         </div>
     }
 </div>
+
+@section Scripts
+{
+<script type="text/javascript">
+        $(document).ready(function () {
+        $('#filterByStatusAnchor').addClass('cursor-not-allowed');
+
+        $('#statusFilterSelect').on('change', function (event) {
+            const val = event.target.value;
+            if (val && val != '') {
+                $('#filterByStatusAnchor').removeClass('cursor-not-allowed');
+                $('#filterByStatusAnchor').attr('href','/Inventory?page=1&status=' + val);
+            }
+            else {
+                  $('#filterByStatusAnchor').attr('href','/Inventory?page=1');
+            }
+        });
+    });
+</script>
+}

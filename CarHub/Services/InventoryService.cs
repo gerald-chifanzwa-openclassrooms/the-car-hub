@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using CarHub.Data;
@@ -26,14 +27,20 @@ namespace CarHub.Services
 
         public async Task<PagedResultSet<VehicleDetailsViewModel>> GetAllVehiclesAsync(GetVehiclesRequest request, CancellationToken cancellationToken)
         {
-            var query = _dbContext.Vehicles
+            IQueryable<Vehicle> query = _dbContext.Vehicles
                                            .Include(v => v.Status)
                                            .Include(v => v.Make)
-                                           .Include(v => v.Images)
-                                           .Where(v => v.Status.Status != LotDisplayStatus.Sold &&
-                                                             (request.IsUserAuthenticated || v.Status.Status != LotDisplayStatus.Hidden) &&
-                                                             (request.Make == null || v.MakeId == request.Make)
-                                                             );
+                                           .Include(v => v.Images);
+            Expression<Func<Vehicle, bool>> filterExpression = request switch
+            {
+                null => (v) => v.Status.Status == LotDisplayStatus.Show,
+                { IsUserAuthenticated: true, Status: null } => (v) => v.Status.Status != LotDisplayStatus.Sold,
+                { IsUserAuthenticated: true, Status: var x } when x != null => v => v.Status.Status == request.Status,
+                { IsUserAuthenticated: false, Make: var m } when m != null => (v) => v.Status.Status == LotDisplayStatus.Show && v.MakeId == m,
+                _ => (v) => v.Status.Status == LotDisplayStatus.Show,
+            };
+
+            query = query.Where(filterExpression);
             var totalCount = await query.CountAsync(cancellationToken);
             var vehicles = await query.Select(v => new VehicleDetailsViewModel
             {
@@ -265,5 +272,39 @@ namespace CarHub.Services
                 MakeId = vehicleEntity.Make.Id,
             };
         }
+
+        public async Task<VehicleViewModel> FlagSoldVehicle(int vehicleId, VehicleSaleViewModel vehicle, CancellationToken cancellationToken)
+        {
+            _logger.LogInformation("Finding vehicle with Id {VehicleId} for publish", vehicleId);
+            var vehicleEntity = await _dbContext.Vehicles
+                                                    .Include(v => v.Status)
+                                                    .Include(v => v.Make)
+                                                    .FirstOrDefaultAsync(v => v.Id == vehicleId, cancellationToken);
+
+            _logger.LogInformation("Vehicle lookup complete. Result: {@VehicleEntity}", vehicleEntity);
+
+            if (vehicleEntity == null) throw new VehicleNotFoundException { VehicleId = vehicleId };
+
+            vehicleEntity.Status.SellingPrice = vehicle.SellingPrice;
+            vehicleEntity.Status.Status = LotDisplayStatus.Sold;
+            vehicleEntity.Status.SellDate = DateTime.UtcNow;
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation("Vehicle {VehicleId} successfully flagged as sold at ${SellingPrice:#,##0.00}", vehicleId, vehicle.SellingPrice);
+
+            return new VehicleViewModel
+            {
+                Id = vehicleEntity.Id,
+                Make = vehicleEntity.Make.Name,
+                Model = vehicleEntity.Model,
+                Trim = vehicleEntity.Trim,
+                Year = vehicleEntity.Year,
+                PurchaseDate = vehicleEntity.PurchaseDate,
+                PurchasePrice = vehicleEntity.PurchasePrice,
+                MakeId = vehicleEntity.Make.Id,
+            };
+        }
+
     }
 }

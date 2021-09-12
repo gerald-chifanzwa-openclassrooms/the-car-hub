@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using CarHub.Exceptions;
 using System;
+using CarHub.Data;
 
 namespace CarHub.Controllers
 {
@@ -18,19 +19,28 @@ namespace CarHub.Controllers
         public ManageInventoryController(IInventoryService inventoryService) => _inventoryService = inventoryService;
 
         public async Task<IActionResult> Index([FromQuery(Name = "page")] int pageNumber = 1,
+                                               [FromQuery(Name = "status")] int? status = null,
                                                CancellationToken cancellation = default)
         {
+            LotDisplayStatus? statusFilter = status == null ? null : (LotDisplayStatus)status;
             var request = new GetVehiclesRequest
             {
                 IsUserAuthenticated = User.Identity.IsAuthenticated,
                 PageNumber = pageNumber,
                 PageSize = 20,
-                Make = null
+                Status = statusFilter,
+                Make = null,
             };
             var vehicles = await _inventoryService.GetAllVehiclesAsync(request, cancellation);
-            ViewData["TotalItems"] = vehicles.TotalCount;
-            ViewData["CurrentPage"] = vehicles.CurrentPage;
-            return View(vehicles.Items);
+            var viewModel = new InventoryListViewModel
+            {
+                Vehicles = vehicles.Items,
+                TotalVehicles = vehicles.TotalCount,
+                CurrentPage = vehicles.CurrentPage,
+                PageSize = 20,
+                StatusFilter = statusFilter
+            };
+            return View(viewModel);
         }
 
         [HttpGet("Add")]
@@ -145,5 +155,27 @@ namespace CarHub.Controllers
             var vehicle = await _inventoryService.PublishVehicle(id, vehicleModel, cancellationToken);
             return RedirectToAction(nameof(Details), new { id = vehicle.Id });
         }
+
+
+        [HttpGet("{id:int}/FlagSold")]
+        public async Task<IActionResult> FlagSold(int id, CancellationToken cancellationToken)
+        {
+            var vehicleDetails = await _inventoryService.GetVehicleAsync(id, cancellationToken);
+            return vehicleDetails switch
+            {
+                null => NotFound(),
+                { Status: Data.LotDisplayStatus.Show } => View(new VehicleSaleViewModel(vehicleDetails)),
+                _ => RedirectToAction(nameof(Details), new { id })
+            };
+        }
+
+        [HttpPost("{id:int}/FlagSold")]
+        public async Task<IActionResult> FlagSold(int id, VehicleSaleViewModel viewModel, CancellationToken cancellationToken)
+        {
+            if (!ModelState.IsValid) return View(viewModel);
+            var vehicle = await _inventoryService.FlagSoldVehicle(id, viewModel, cancellationToken);
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }
