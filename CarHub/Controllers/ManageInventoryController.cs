@@ -17,9 +17,17 @@ namespace CarHub.Controllers
 
         public ManageInventoryController(IInventoryService inventoryService) => _inventoryService = inventoryService;
 
-        public async Task<IActionResult> Index([FromQuery(Name = "page")] int pageNumber = 1, CancellationToken cancellation = default)
+        public async Task<IActionResult> Index([FromQuery(Name = "page")] int pageNumber = 1,
+                                               CancellationToken cancellation = default)
         {
-            var vehicles = await _inventoryService.GetAllVehiclesAsync(pageNumber, 20, User.Identity.IsAuthenticated, cancellation);
+            var request = new GetVehiclesRequest
+            {
+                IsUserAuthenticated = User.Identity.IsAuthenticated,
+                PageNumber = pageNumber,
+                PageSize = 20,
+                Make = null
+            };
+            var vehicles = await _inventoryService.GetAllVehiclesAsync(request, cancellation);
             ViewData["TotalItems"] = vehicles.TotalCount;
             ViewData["CurrentPage"] = vehicles.CurrentPage;
             return View(vehicles.Items);

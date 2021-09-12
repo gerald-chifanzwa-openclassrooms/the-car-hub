@@ -1,5 +1,6 @@
 ﻿@using System.Linq
 @model IEnumerable<CarHub.Models.VehicleDetailsViewModel>
+@inject CarHub.Services.IVehicleMakeService vehicleMakeService
 
 @{
     ViewData["Title"] = "Home";
@@ -7,10 +8,39 @@
     int currentPage = (int)ViewData["CurrentPage"];
 
     var totalPages = Math.Ceiling(totalItems / 20M);
+
+    var yearRange = Enumerable.Range(1990, DateTime.Today.Year - 1990 + 2).OrderByDescending(v => v);
+
+    var makes = await vehicleMakeService.GetVehicleMakes(default);
+    var makeOptions = makes.Select(m => new SelectListItem(m.Name, m.Id.ToString()));
+    string selectedMakeId = Context.Request.Query["make"];
+
+    var selectedMake = selectedMakeId == null ? null : makes.FirstOrDefault(m => m.Id == int.Parse(selectedMakeId));
 }
 <div class="flex flex-col items-stretch">
     <div class="px-2 md:px-4 py-16 text-center bg-gray-200">
         <h1 class="text-7xl font-bold font-sans text-indigo-700">Welcome to Eddie's Car Sale</h1>
+    </div>
+    <div class="px-2 md:px-4 py-8 text-center bg-gray-100">
+        <div class="mx-auto my-4 max-w-xl flex gap-2">
+            <select class="form-control w-full" id="selectedMake">
+                <option>Filter by make</option>
+                @foreach (var option in makeOptions)
+                {
+                    <option value="@option.Value">@option.Text</option>
+                }
+            </select>
+
+            <a class="btn btn-primary w-full" id="filterByMakeAnchor" href="#">
+                Filter
+            </a>
+        </div>
+        @if (selectedMake != null)
+        {
+            <div class="mx-auto my-4 max-w-xl ">
+                <h4 class="my-2 text-gray-700 text-4xl text-center">@selectedMake.Name</h4>
+            </div>
+        }
     </div>
 
     @if (@Model.Any())
@@ -97,3 +127,20 @@
         </div>
     }
 </div>
+@section Scripts
+{
+<script type="text/javascript">
+        $(document).ready(function () {
+        $('#filterByMakeAnchor').addClass('cursor-not-allowed');
+
+        $('#selectedMake').on('change', function (event) {
+            const val = event.target.value;
+            if (val && val != '') {
+
+                $('#filterByMakeAnchor').removeClass('cursor-not-allowed');
+                $('#filterByMakeAnchor').attr('href','/?page=1&make=' + val);
+            }
+        });
+    });
+</script>
+}
