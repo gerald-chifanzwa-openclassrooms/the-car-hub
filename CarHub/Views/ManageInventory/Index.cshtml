@@ -76,7 +76,7 @@
                 {
                     @if (i != currentPage)
                     {
-                        <a class="w-12 h-12 flex items-center justify-center rounded-full transition-all duration-100 border-2 group border-indigo-300 hover:bg-indigo-500 hover:border-indigo-500" asp-action="Index" asp-route-page="@i">
+                        <a class="w-12 h-12 flex items-center justify-center rounded-full transition-all duration-100 border-2 group border-indigo-300 hover:bg-indigo-500 hover:border-indigo-500" asp-action="Index" asp-route-page="@i" asp-route-status="@Context.Request.Query["status"]">
                             <span class="text-indigo-500 group-hover:text-white">@i</span>
                         </a>
                     }
