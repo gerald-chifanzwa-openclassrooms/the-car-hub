@@ -24,14 +24,16 @@ namespace CarHub.Services
             _logger = logger;
         }
 
-        public async Task<PagedResultSet<VehicleDetailsViewModel>> GetAllVehiclesAsync(int page, int fetchSize, bool isUserAuthenticated, CancellationToken cancellationToken)
+        public async Task<PagedResultSet<VehicleDetailsViewModel>> GetAllVehiclesAsync(GetVehiclesRequest request, CancellationToken cancellationToken)
         {
             var query = _dbContext.Vehicles
                                            .Include(v => v.Status)
                                            .Include(v => v.Make)
                                            .Include(v => v.Images)
                                            .Where(v => v.Status.Status != LotDisplayStatus.Sold &&
-                                                                    (isUserAuthenticated || v.Status.Status != LotDisplayStatus.Hidden));
+                                                             (request.IsUserAuthenticated || v.Status.Status != LotDisplayStatus.Hidden) &&
+                                                             (request.Make == null || v.MakeId == request.Make)
+                                                             );
             var totalCount = await query.CountAsync(cancellationToken);
             var vehicles = await query.Select(v => new VehicleDetailsViewModel
             {
@@ -47,15 +49,15 @@ namespace CarHub.Services
                 Status = v.Status.Status,
                 Images = v.Images.Select(img => $"/images/{v.Id}/{img.FileName}").ToList()
             }).OrderBy(v => v.PurchaseDate)
-                .Skip((page - 1) * fetchSize)
-                .Take(fetchSize)
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .ToListAsync(cancellationToken);
 
             return new PagedResultSet<VehicleDetailsViewModel>
             {
                 Items = vehicles,
                 TotalCount = totalCount,
-                CurrentPage = page,
+                CurrentPage = request.PageNumber,
             };
         }
 

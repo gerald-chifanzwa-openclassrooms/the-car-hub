@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Bogus;
 using CarHub.Data;
+using CarHub.Models;
 using CarHub.Services;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -48,7 +49,14 @@ namespace CarHub.Tests
             _dbContext.SaveChanges();
 
             // Act
-            var results = inventoryService.GetAllVehiclesAsync(1, 100, false, default).GetAwaiter().GetResult();
+            var results = inventoryService.GetAllVehiclesAsync(new GetVehiclesRequest
+            {
+                IsUserAuthenticated = false,
+                PageNumber = 1,
+                PageSize = 20,
+                Make = null
+            },
+            default).GetAwaiter().GetResult();
 
             // Assert
             results.Items.Should().HaveCount(5);
@@ -77,7 +85,13 @@ namespace CarHub.Tests
             _dbContext.SaveChanges();
 
             // Act
-            var results = inventoryService.GetAllVehiclesAsync(1, 100, true, default).GetAwaiter().GetResult();
+            var results = inventoryService.GetAllVehiclesAsync(new GetVehiclesRequest
+            {
+                IsUserAuthenticated = true,
+                PageNumber = 1,
+                PageSize = 20,
+                Make = null
+            }, default).GetAwaiter().GetResult();
 
             // Assert
             results.Items.Should().HaveCount(15);

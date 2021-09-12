@@ -8,7 +8,7 @@ namespace CarHub.Services
 {
     public interface IInventoryService
     {
-        Task<PagedResultSet<VehicleDetailsViewModel>> GetAllVehiclesAsync(int page, int fetchSize, bool isUserAuthenticated,CancellationToken cancellationToken);
+        Task<PagedResultSet<VehicleDetailsViewModel>> GetAllVehiclesAsync(GetVehiclesRequest request, CancellationToken cancellationToken);
         Task<VehicleDetailsViewModel> GetVehicleAsync(int vehicleId, CancellationToken cancellationToken);
         Task<VehicleViewModel> AddVehicle(VehicleInputViewModel vehicle, CancellationToken cancellationToken);
         Task<VehicleViewModel> RemoveVehicle(int vehicleId, CancellationToken cancellationToken);
