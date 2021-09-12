@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using CarHub.Data;
@@ -26,14 +27,20 @@ namespace CarHub.Services
 
         public async Task<PagedResultSet<VehicleDetailsViewModel>> GetAllVehiclesAsync(GetVehiclesRequest request, CancellationToken cancellationToken)
         {
-            var query = _dbContext.Vehicles
+            IQueryable<Vehicle> query = _dbContext.Vehicles
                                            .Include(v => v.Status)
                                            .Include(v => v.Make)
-                                           .Include(v => v.Images)
-                                           .Where(v => v.Status.Status != LotDisplayStatus.Sold &&
-                                                             (request.IsUserAuthenticated || v.Status.Status != LotDisplayStatus.Hidden) &&
-                                                             (request.Make == null || v.MakeId == request.Make)
-                                                             );
+                                           .Include(v => v.Images);
+            Expression<Func<Vehicle, bool>> filterExpression = request switch
+            {
+                null => (v) => v.Status.Status == LotDisplayStatus.Show,
+                { IsUserAuthenticated: true, Status: null } => (v) => v.Status.Status != LotDisplayStatus.Sold,
+                { IsUserAuthenticated: true, Status: var x } when x != null => v => v.Status.Status == request.Status,
+                { IsUserAuthenticated: false, Make: var m } when m != null => (v) => v.Status.Status == LotDisplayStatus.Show && v.MakeId == m,
+                _ => (v) => v.Status.Status == LotDisplayStatus.Show,
+            };
+
+            query = query.Where(filterExpression);
             var totalCount = await query.CountAsync(cancellationToken);
             var vehicles = await query.Select(v => new VehicleDetailsViewModel
             {
